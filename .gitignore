@@ -1,0 +1,10 @@
+node_modules/
+dist/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+*.db
+careercast/backend/uploads/*
+!careercast/backend/uploads/.gitkeep
