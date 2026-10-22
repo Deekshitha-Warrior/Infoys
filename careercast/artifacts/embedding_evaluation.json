@@ -1,0 +1,64 @@
+{
+  "base_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "fine_tuning": "One epoch of cosine-similarity training on 240 O*NET descriptions, associated software lists, and deterministic mismatched-description negatives. Not fine-tuned on the survey test set.",
+  "training_pairs": 480,
+  "test_pairs": [
+    {
+      "left": "JavaScript",
+      "right": "JS",
+      "cosine": 0.8408
+    },
+    {
+      "left": "Python",
+      "right": "Python programming",
+      "cosine": 0.914
+    },
+    {
+      "left": "PostgreSQL",
+      "right": "Postgres",
+      "cosine": 0.9097
+    },
+    {
+      "left": "Amazon Web Services",
+      "right": "AWS",
+      "cosine": 0.6614
+    },
+    {
+      "left": "Kubernetes",
+      "right": "K8s",
+      "cosine": 0.4402
+    },
+    {
+      "left": "React",
+      "right": "React.js",
+      "cosine": 0.9041
+    },
+    {
+      "left": "Machine learning",
+      "right": "ML",
+      "cosine": 0.3985
+    },
+    {
+      "left": "Google Cloud Platform",
+      "right": "GCP",
+      "cosine": 0.6097
+    },
+    {
+      "left": "Microsoft Excel",
+      "right": "Excel spreadsheet",
+      "cosine": 0.9133
+    },
+    {
+      "left": "SQL",
+      "right": "Structured Query Language",
+      "cosine": 0.5761
+    }
+  ],
+  "mean_synonym_cosine": 0.7168,
+  "fraction_at_least_85": 0.4,
+  "mean_cosine_85_gate": false,
+  "limitations": [
+    "Small manually curated synonym test; not a SemEval evaluation.",
+    "O*NET job descriptions and software associations are weak supervision, not human-annotated synonym pairs."
+  ]
+}

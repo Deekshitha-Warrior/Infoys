@@ -1,0 +1,11 @@
+{
+  "scikit-learn": "1.9.1",
+  "xgboost": "3.4.1",
+  "joblib": "1.6.0",
+  "sentence-transformers": "6.2.0",
+  "torch": "2.14.1",
+  "transformers": "5.20.2",
+  "spacy": "3.8.16",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1"
+}

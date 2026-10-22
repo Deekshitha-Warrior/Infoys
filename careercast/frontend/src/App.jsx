@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProfilePage from "./pages/ProfilePage";
 import ResumeUploadPage from "./pages/ResumeUploadPage";
+import IntelligencePage from "./pages/IntelligencePage";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -23,6 +24,19 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
+        {["careers", "skills", "learning", "models", "settings", "help"].map(
+          (path) => (
+            <Route
+              key={path}
+              path={`/${path}`}
+              element={
+                <ProtectedRoute>
+                  <IntelligencePage />
+                </ProtectedRoute>
+              }
+            />
+          ),
+        )}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route
           path="/login"

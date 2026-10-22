@@ -1,0 +1,152 @@
+{
+  "status": "trained",
+  "version": "career-survey-semantic-v2",
+  "trained_at": "2026-10-22T17:06:28.521968+00:00",
+  "dataset": "dyno7/career_recommender (anonymized subset)",
+  "train_rows": 269,
+  "test_rows": 90,
+  "classes": [
+    "Business Intelligence Analyst",
+    "Civil Engineer",
+    "Data Scientist",
+    "Educator",
+    "Finance Analyst",
+    "Marketing Specialist",
+    "Mechanical Engineer",
+    "Software Developer",
+    "Software QA Engineer",
+    "Web Developer"
+  ],
+  "split": "Stratified 75/25; seed 42; exact feature duplicates removed before split. Vectorizer fitted inside each CV fold.",
+  "models": {
+    "logistic_regression": {
+      "accuracy": 0.5556,
+      "precision_macro": 0.4171,
+      "recall_macro": 0.4861,
+      "f1_macro": 0.4325,
+      "top5_recall": 0.8889,
+      "cv_f1_macro": 0.4208,
+      "best_parameters": {
+        "classifier__C": 8.0
+      }
+    },
+    "random_forest": {
+      "accuracy": 0.3778,
+      "precision_macro": 0.2779,
+      "recall_macro": 0.3229,
+      "f1_macro": 0.2844,
+      "top5_recall": 0.8667,
+      "cv_f1_macro": 0.3028,
+      "best_parameters": {
+        "classifier__max_depth": null,
+        "classifier__min_samples_leaf": 2
+      }
+    },
+    "xgboost": {
+      "accuracy": 0.4889,
+      "precision_macro": 0.3181,
+      "recall_macro": 0.2968,
+      "f1_macro": 0.302,
+      "top5_recall": 0.8889,
+      "cv_f1_macro": 0.2847,
+      "best_parameters": {
+        "classifier__learning_rate": 0.15,
+        "classifier__max_depth": 2
+      }
+    }
+  },
+  "ensemble": {
+    "accuracy": 0.5333,
+    "precision_macro": 0.3761,
+    "recall_macro": 0.3735,
+    "f1_macro": 0.3697,
+    "top5_recall": 0.9
+  },
+  "gates": {
+    "baseline_top1_65": false,
+    "ensemble_f1_80": false,
+    "top5_recall_90": true,
+    "parser_200_resumes": "not_verified_no_independently_annotated_corpus",
+    "semeval_linkedin": "not_available",
+    "embedding_mean_cosine_85": false
+  },
+  "limitations": [
+    "Metrics apply only to the small public survey split.",
+    "Class confidence is uncalibrated model probability, not job success likelihood.",
+    "Top-5 recall is less informative with few career classes.",
+    "No independent 200-resume annotation set or identified SemEval/LinkedIn benchmark.",
+    "No live market demand data is used."
+  ],
+  "features": "TF-IDF + canonical multi-hot skills + fine-tuned Sentence-BERT embeddings",
+  "ranking": {
+    "accuracy": 0.5333,
+    "precision_macro": 0.382,
+    "recall_macro": 0.3797,
+    "f1_macro": 0.3753,
+    "top5_recall": 0.9
+  },
+  "embedding": {
+    "base_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "fine_tuning": "One epoch of cosine-similarity training on 240 O*NET descriptions, associated software lists, and deterministic mismatched-description negatives. Not fine-tuned on the survey test set.",
+    "training_pairs": 480,
+    "test_pairs": [
+      {
+        "left": "JavaScript",
+        "right": "JS",
+        "cosine": 0.8408
+      },
+      {
+        "left": "Python",
+        "right": "Python programming",
+        "cosine": 0.914
+      },
+      {
+        "left": "PostgreSQL",
+        "right": "Postgres",
+        "cosine": 0.9097
+      },
+      {
+        "left": "Amazon Web Services",
+        "right": "AWS",
+        "cosine": 0.6614
+      },
+      {
+        "left": "Kubernetes",
+        "right": "K8s",
+        "cosine": 0.4402
+      },
+      {
+        "left": "React",
+        "right": "React.js",
+        "cosine": 0.9041
+      },
+      {
+        "left": "Machine learning",
+        "right": "ML",
+        "cosine": 0.3985
+      },
+      {
+        "left": "Google Cloud Platform",
+        "right": "GCP",
+        "cosine": 0.6097
+      },
+      {
+        "left": "Microsoft Excel",
+        "right": "Excel spreadsheet",
+        "cosine": 0.9133
+      },
+      {
+        "left": "SQL",
+        "right": "Structured Query Language",
+        "cosine": 0.5761
+      }
+    ],
+    "mean_synonym_cosine": 0.7168,
+    "fraction_at_least_85": 0.4,
+    "mean_cosine_85_gate": false,
+    "limitations": [
+      "Small manually curated synonym test; not a SemEval evaluation.",
+      "O*NET job descriptions and software associations are weak supervision, not human-annotated synonym pairs."
+    ]
+  }
+}

@@ -50,3 +50,11 @@ class Resume(Base):
     parsed_information = Column(Text, nullable=True)  # JSON string
 
     user = relationship("User", back_populates="resumes")
+
+
+class Prediction(Base):
+    __tablename__ = "predictions"
+    prediction_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False, index=True)
+    result = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

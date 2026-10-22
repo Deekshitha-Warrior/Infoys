@@ -1,409 +1,358 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  Upload, FileText, CheckCircle, AlertCircle, Loader2,
-  RefreshCw, Save, X, ChevronDown, ChevronUp,
+  CloudUpload,
+  FileText,
+  Check,
+  ArrowRight,
+  RefreshCw,
+  Sparkles,
+  ShieldCheck,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
+import { Ring } from "./IntelligencePage";
 import api from "../api";
-
-const MAX_MB = 5;
-
-/* ── Tag editor ────────────────────────────────────────────────────────── */
-function TagEditor({ tags, onChange, placeholder, scheme = "green" }) {
-  const [input, setInput] = useState("");
-
-  const styles = {
-    green:  { pill: "bg-pg-100 text-pg-800 border border-pg-300",          ring: "#00A693" },
-    teal:   { pill: "bg-emerald-50 text-emerald-800 border border-emerald-200", ring: "#059669" },
-    gold:   { pill: "bg-amber-50 text-amber-800 border border-amber-200",   ring: "#C9A86A" },
-  };
-  const s = styles[scheme] || styles.green;
-
-  function addTag(e) {
-    if ((e.key === "Enter" || e.key === ",") && input.trim()) {
-      e.preventDefault();
-      const tag = input.trim().replace(/,$/, "");
-      if (tag && !tags.includes(tag)) onChange([...tags, tag]);
-      setInput("");
+export default function ResumeUploadPage() {
+  const input = useRef(null),
+    [file, setFile] = useState(null),
+    [resume, setResume] = useState(null),
+    [analysis, setAnalysis] = useState(null),
+    [error, setError] = useState(""),
+    [message, setMessage] = useState(""),
+    [busy, setBusy] = useState(false),
+    [saving, setSaving] = useState(false),
+    [drag, setDrag] = useState(false),
+    [fields, setFields] = useState({});
+  function populate(r) {
+    setResume(r);
+    setFields(
+      Object.fromEntries(
+        ["technical_skills", "education", "job_roles", "experience"].map(
+          (k) => [k, (r.parsed_information?.[k] || []).join("\n")],
+        ),
+      ),
+    );
+  }
+  useEffect(() => {
+    let active = true;
+    api
+      .get("/api/resume/latest")
+      .then((r) => active && populate(r.data))
+      .catch((e) => {
+        if (active && e.response?.status !== 404)
+          setError("Could not load your latest résumé.");
+      });
+    api
+      .get("/api/intelligence/resume-analysis")
+      .then((r) => active && setAnalysis(r.data))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+  function choose(f) {
+    setError("");
+    setMessage("");
+    if (!f) return;
+    if (!/\.(pdf|docx)$/i.test(f.name)) {
+      setError("Please choose a PDF or DOCX file.");
+      return;
+    }
+    if (f.size > 5 * 1024 * 1024) {
+      setError("The file must be 5 MB or smaller.");
+      return;
+    }
+    setFile(f);
+  }
+  async function analyze() {
+    if (!file) return;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const r = await api.post("/api/resume/upload", body, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      populate(r.data);
+      setAnalysis((await api.get("/api/intelligence/resume-analysis")).data);
+      setMessage(
+        "Résumé analyzed. Review the extracted details before saving.",
+      );
+    } catch (e) {
+      setError(
+        e.response?.data?.detail ||
+          "Could not analyze this file. Please try a text-based PDF or DOCX.",
+      );
+    } finally {
+      setBusy(false);
     }
   }
-
-  return (
-    <div
-      className="bg-white border border-ink-border rounded-xl px-3 py-2 flex flex-wrap gap-2 min-h-[46px] transition-all"
-      style={{ ["--ring-color"]: s.ring }}
-      onFocus={(e) => { e.currentTarget.style.borderColor = s.ring; e.currentTarget.style.boxShadow = `0 0 0 3px ${s.ring}20`; }}
-      onBlur={(e)  => { e.currentTarget.style.borderColor = "#DCEAE3"; e.currentTarget.style.boxShadow = "none"; }}
-    >
-      {tags.map((t) => (
-        <span key={t} className={`flex items-center gap-1.5 ${s.pill} text-xs px-2.5 py-1 rounded-full font-medium`}>
-          {t}
-          <button type="button" onClick={() => onChange(tags.filter((x) => x !== t))} className="hover:opacity-60 transition-opacity">
-            <X size={11} />
-          </button>
-        </span>
-      ))}
-      <input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={addTag}
-        placeholder={tags.length === 0 ? placeholder : "Add more…"}
-        className="flex-1 bg-transparent text-sm text-ink-900 placeholder-ink-400 focus:outline-none min-w-[120px] py-0.5"
-      />
-    </div>
-  );
-}
-
-/* ── Collapsible section ───────────────────────────────────────────────── */
-function Section({ title, children, defaultOpen = true }) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className="bg-white rounded-xl border border-ink-border overflow-hidden" style={{ boxShadow: "0 1px 3px rgb(0 0 0 / 0.05)" }}>
-      <button
-        type="button"
-        onClick={() => setOpen((p) => !p)}
-        className="w-full flex items-center justify-between px-5 py-3.5 text-left transition-colors"
-        style={{ background: "#F7FAF8", borderBottom: open ? "1px solid #DCEAE3" : "none" }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = "#DFF7EF"; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = "#F7FAF8"; }}
-      >
-        <span className="text-sm font-semibold text-ink-900">{title}</span>
-        <div className="text-ink-600">
-          {open ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-        </div>
-      </button>
-      {open && (
-        <div className="px-5 py-4 bg-white animate-fade-in">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── File badge ────────────────────────────────────────────────────────── */
-function FileBadge({ filename }) {
-  const ext = filename?.split(".").pop()?.toUpperCase() || "";
-  const cls = ext === "PDF"
-    ? "bg-red-50 text-red-600 border-red-200"
-    : "bg-emerald-50 text-emerald-700 border-emerald-200";
-  return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${cls}`}>{ext}</span>;
-}
-
-/* ── Safe date ─────────────────────────────────────────────────────────── */
-function formatDate(raw) {
-  if (!raw) return "Unknown date";
-  const d = new Date(raw);
-  return isNaN(d.getTime()) ? "Unknown date" : d.toLocaleDateString(undefined, { dateStyle: "medium" });
-}
-
-export default function ResumeUploadPage() {
-  const [dragging,     setDragging]     = useState(false);
-  const [file,         setFile]         = useState(null);
-  const [uploading,    setUploading]    = useState(false);
-  const [uploadError,  setUploadError]  = useState("");
-  const [parsed,       setParsed]       = useState(null);
-  const [existing,     setExisting]     = useState(null);
-
-  const [techSkills,   setTechSkills]   = useState([]);
-  const [softSkills,   setSoftSkills]   = useState([]);
-  const [jobRoles,     setJobRoles]     = useState([]);
-  const [experience,   setExperience]   = useState([]);
-  const [education,    setEducation]    = useState([]);
-
-  const [applying,     setApplying]     = useState(false);
-  const [applySuccess, setApplySuccess] = useState("");
-  const [applyError,   setApplyError]   = useState("");
-
-  useEffect(() => {
-    api.get("/api/resume/latest").then((r) => setExisting(r.data)).catch(() => {});
-  }, []);
-
-  function populateEditable(info) {
-    setTechSkills(info?.technical_skills || []);
-    setSoftSkills(info?.soft_skills      || []);
-    setJobRoles(info?.job_roles          || []);
-    setExperience(info?.experience       || []);
-    setEducation(info?.education         || []);
-  }
-
-  function validateFile(f) {
-    if (!f) return "No file selected.";
-    const ext = f.name.split(".").pop().toLowerCase();
-    if (!["pdf", "docx"].includes(ext))
-      return `Unsupported format ".${ext}". Please upload PDF or DOCX.`;
-    if (f.size > MAX_MB * 1024 * 1024)
-      return `File is ${(f.size / 1024 / 1024).toFixed(1)} MB — maximum is ${MAX_MB} MB.`;
-    return null;
-  }
-
-  function handleFiles(files) {
-    const f = files[0];
-    const err = validateFile(f);
-    if (err) { setUploadError(err); return; }
-    setUploadError(""); setFile(f); setParsed(null);
-  }
-
-  const onDrop = useCallback((e) => {
-    e.preventDefault(); setDragging(false); handleFiles(e.dataTransfer.files);
-  }, []);
-
-  async function handleUpload() {
-    if (!file) return;
-    setUploading(true); setUploadError(""); setParsed(null);
-    setApplySuccess(""); setApplyError("");
+  async function save() {
+    setSaving(true);
+    setError("");
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await api.post("/api/resume/upload", fd, { headers: { "Content-Type": "multipart/form-data" } });
-      setParsed(res.data);
-      populateEditable(res.data.parsed_information);
-      setExisting(res.data);
-    } catch (err) {
-      setUploadError(err.response?.data?.detail || "Upload failed. Please try again.");
-    } finally { setUploading(false); }
+      await api.post(
+        `/api/resume/${resume.resume_id}/apply`,
+        Object.fromEntries(
+          Object.entries(fields).map(([k, v]) => [
+            k,
+            v
+              .split("\n")
+              .map((s) => s.trim())
+              .filter(Boolean),
+          ]),
+        ),
+      );
+      setMessage(
+        "Confirmed details saved to your profile. Refresh career analysis to see your updated recommendations.",
+      );
+    } catch (e) {
+      setError(
+        e.response?.data?.detail || "Could not save the extracted details.",
+      );
+    } finally {
+      setSaving(false);
+    }
   }
-
-  async function handleApply() {
-    if (!parsed) return;
-    setApplying(true); setApplyError(""); setApplySuccess("");
-    try {
-      await api.post(`/api/resume/${parsed.resume_id}/apply`, {
-        technical_skills: techSkills, soft_skills: softSkills,
-        job_roles: jobRoles, experience, education,
-      });
-      setApplySuccess("Extracted data saved to your profile!");
-      setTimeout(() => setApplySuccess(""), 4000);
-    } catch (err) {
-      setApplyError(err.response?.data?.detail || "Failed to save data.");
-    } finally { setApplying(false); }
-  }
-
   return (
-    <DashboardLayout title="Resume Upload">
-      <div className="max-w-3xl mx-auto space-y-5">
-
-        {/* ── Page header ────────────────────────────────────────── */}
+    <DashboardLayout title="Resume Analyzer">
+      <div className="page-heading">
         <div>
-          <h2 className="text-2xl font-bold text-ink-900">Resume Upload &amp; Parsing</h2>
-          <p className="text-ink-600 text-sm mt-1">
-            Upload your resume and let CareerCast extract key information automatically.
+          <p className="eyebrow">MAKE YOUR EXPERIENCE COUNT</p>
+          <h1>Resume Analyzer</h1>
+          <p className="muted">
+            Your experience has a story. Let’s help it come through.
           </p>
         </div>
-
-        {/* ── Previously uploaded notice ─────────────────────────── */}
-        {existing && !parsed && (
-          <div className="bg-white rounded-xl border border-ink-border flex items-center gap-4 px-5 py-4 animate-fade-in"
-            style={{ boxShadow: "0 1px 3px rgb(0 0 0 / 0.06)", borderColor: "#A7EAD3" }}>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: "#DFF7EF", border: "1px solid #A7EAD3" }}>
-              <FileText size={17} style={{ color: "#00A693" }} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
-                <p className="text-ink-900 text-sm font-semibold truncate">{existing.filename}</p>
-                <FileBadge filename={existing.filename} />
-              </div>
-              <p className="text-ink-600 text-xs">Uploaded {formatDate(existing.upload_date)}</p>
-            </div>
-            <button
-              onClick={() => { setParsed(existing); populateEditable(existing.parsed_information); }}
-              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-all flex-shrink-0"
-              style={{ background: "#DFF7EF", border: "1px solid #A7EAD3", color: "#065F46" }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#C7F0E4"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#DFF7EF"; }}
-            >
-              <RefreshCw size={12} /> View Parsed
-            </button>
+        <span className="ai-badge">
+          <ShieldCheck size={15} />
+          Only visible to your account
+        </span>
+      </div>
+      {error && (
+        <div className="error-banner" role="alert">
+          {error}
+        </div>
+      )}
+      {message && (
+        <div className="success-banner" role="status">
+          <Check size={17} />
+          {message}
+        </div>
+      )}
+      <div className="resume-top-grid">
+        <section className="panel upload-panel">
+          <div className="card-heading">
+            <h3>Upload your résumé</h3>
+            <span className="lavender-pill">PDF / DOCX</span>
           </div>
-        )}
-
-        {/* ── Drop zone ──────────────────────────────────────────── */}
-        <div
-          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={onDrop}
-          onClick={() => document.getElementById("resume-file-input").click()}
-          className="rounded-2xl p-10 text-center cursor-pointer transition-all duration-200"
-          style={{
-            border: `2px dashed ${file ? "#059669" : dragging ? "#00A693" : "#5ED3AC"}`,
-            background: file ? "#ECFDF5" : dragging ? "#DFF7EF" : "#F0FDF8",
-            transform: dragging ? "scale(1.005)" : "scale(1)",
-          }}
-        >
-          <input id="resume-file-input" type="file" accept=".pdf,.docx" className="hidden"
-            onChange={(e) => handleFiles(e.target.files)} />
-
-          {/* Icon container */}
-          <div className="w-14 h-14 mx-auto mb-4 rounded-xl flex items-center justify-center border transition-all"
-            style={{
-              background: file ? "#D1FAE5" : dragging ? "#DFF7EF" : "#FFFFFF",
-              borderColor: file ? "#A7F3D0" : dragging ? "#5ED3AC" : "#DCEAE3",
-            }}>
-            {file
-              ? <CheckCircle size={26} style={{ color: "#059669" }} />
-              : <Upload size={26} style={{ color: dragging ? "#00A693" : "#52645D" }} />
-            }
-          </div>
-
-          {file ? (
-            <div>
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-ink-900 font-semibold">{file.name}</p>
-                <FileBadge filename={file.name} />
-              </div>
-              <p className="text-ink-600 text-sm">{(file.size / 1024).toFixed(1)} KB — ready to upload</p>
+          <div
+            className={`resume-drop ${drag ? "dragging" : ""}`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDrag(true);
+            }}
+            onDragLeave={() => setDrag(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDrag(false);
+              choose(e.dataTransfer.files[0]);
+            }}
+          >
+            <div className="upload-illustration">
+              <CloudUpload size={50} strokeWidth={1.2} />
+            </div>
+            <h2>{file ? file.name : "Drop your résumé here"}</h2>
+            <p>
+              or{" "}
               <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); setFile(null); setParsed(null); setUploadError(""); }}
-                className="mt-3 text-xs text-ink-600 hover:text-red-600 transition-colors flex items-center gap-1 mx-auto"
+                className="text-button"
+                onClick={() => input.current.click()}
               >
-                <X size={11} /> Remove file
-              </button>
-            </div>
+                browse files
+              </button>{" "}
+              to upload
+            </p>
+            <small>PDF or DOCX · Up to 5 MB · Text-based documents</small>
+            <input
+              ref={input}
+              aria-label="Choose resume"
+              type="file"
+              accept=".pdf,.docx"
+              onChange={(e) => choose(e.target.files[0])}
+              hidden
+            />
+          </div>
+          <button
+            className="primary analyze-button"
+            onClick={analyze}
+            disabled={!file || busy}
+          >
+            {busy ? (
+              <RefreshCw size={16} className="spinning" />
+            ) : (
+              <Sparkles size={16} />
+            )}{" "}
+            {busy ? "Reading your résumé…" : "Analyze résumé"}
+          </button>
+          <p className="upload-note">
+            We extract your skills, education, and experience. You review what
+            gets added to your profile.
+          </p>
+        </section>
+        <section className="panel resume-score">
+          <h3>Résumé completeness</h3>
+          {analysis ? (
+            <>
+              <Ring value={analysis.score} label="Completeness" />
+              <span className="green-pill">
+                {analysis.score >= 75 ? "Strong foundation" : "Room to grow"}
+              </span>
+              <p className="muted">{analysis.word_count} words analyzed</p>
+              <p className="data-note">{analysis.method}</p>
+            </>
           ) : (
-            <div>
-              <p className="text-ink-900 font-semibold text-base mb-1">
-                {dragging ? "Drop it here!" : "Drag & drop your resume"}
+            <div className="empty-state">
+              <FileText size={45} />
+              <h3>Your story, at a glance</h3>
+              <p>
+                Upload a résumé to see your completeness score and suggestions.
               </p>
-              <p className="text-ink-600 text-sm mb-3">or click to browse your files</p>
-              <div className="flex items-center justify-center gap-3">
-                <span className="bg-red-50 border border-red-200 text-red-600 text-xs px-2.5 py-1 rounded-full font-medium">PDF</span>
-                <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: "#DFF7EF", border: "1px solid #A7EAD3", color: "#065F46" }}>DOCX</span>
-                <span className="text-ink-600 text-xs">Max {MAX_MB} MB</span>
-              </div>
             </div>
           )}
-        </div>
-
-        {/* Upload error */}
-        {uploadError && (
-          <div className="flex items-center gap-2.5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 animate-fade-in">
-            <AlertCircle size={16} style={{ color: "#DC2626", flexShrink: 0 }} />
-            <p className="text-red-700 text-sm">{uploadError}</p>
-          </div>
-        )}
-
-        {/* Upload button */}
-        {file && !parsed && (
-          <button
-            onClick={handleUpload}
-            disabled={uploading}
-            className="btn-green flex items-center gap-2 px-6 py-3 text-sm animate-slide-up"
-            style={{ animationFillMode: "both" }}
-          >
-            {uploading
-              ? <><Loader2 size={15} className="animate-spin" /> Uploading &amp; Parsing…</>
-              : <><Upload size={15} /> Upload &amp; Parse Resume</>
-            }
-          </button>
-        )}
-
-        {/* ── Parsed results ─────────────────────────────────────── */}
-        {parsed && (
-          <div className="space-y-4 animate-fade-in">
-
-            {/* Results header */}
-            <div className="bg-white rounded-xl border flex items-center gap-3 px-5 py-4"
-              style={{ borderColor: "#A7F3D0", boxShadow: "0 1px 3px rgb(0 0 0 / 0.05)" }}>
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: "#D1FAE5", border: "1px solid #A7F3D0" }}>
-                <CheckCircle size={18} style={{ color: "#059669" }} />
-              </div>
-              <div>
-                <p className="text-ink-900 text-sm font-semibold">Parsing complete</p>
-                <p className="text-ink-600 text-xs mt-0.5">Review and edit extracted data below, then save to your profile</p>
-              </div>
-            </div>
-
-            <Section title="Technical Skills" defaultOpen>
-              <p className="text-ink-600 text-xs mb-3">Press Enter or comma to add · click × to remove</p>
-              <TagEditor tags={techSkills} onChange={setTechSkills} placeholder="e.g. Python, React, SQL…" scheme="green" />
-            </Section>
-
-            <Section title="Education Details" defaultOpen>
-              <div className="space-y-2.5">
-                {education.length > 0 ? (
-                  education.map((line, i) => (
-                    <div key={i} className="flex items-start gap-3 group">
-                      <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ background: "#00A693" }} />
-                      <p className="text-ink-900 text-sm flex-1 leading-relaxed">{line}</p>
-                      <button
-                        onClick={() => setEducation(education.filter((_, j) => j !== i))}
-                        className="opacity-0 group-hover:opacity-100 text-ink-600 hover:text-red-600 transition-all flex-shrink-0 mt-0.5"
-                      >
-                        <X size={13} />
-                      </button>
-                    </div>
-                  ))
+        </section>
+        <section className="panel checks-panel">
+          <h3>What we look for</h3>
+          {(
+            analysis?.checks ||
+            [
+              "contact",
+              "education",
+              "skills",
+              "experience",
+              "projects",
+              "impact",
+              "portfolio",
+              "summary",
+            ].map((name) => ({ name, passed: null }))
+          ).map((c) => (
+            <div className="resume-check" key={c.name}>
+              <span>{c.name}</span>
+              <span className={c.passed ? "check-circle" : "pending-check"}>
+                {c.passed ? (
+                  <Check size={12} />
+                ) : c.passed === false ? (
+                  "—"
                 ) : (
-                  <p className="text-ink-600 text-sm italic">No education details extracted.</p>
+                  "·"
                 )}
-              </div>
-            </Section>
-
-            <Section title="Job Roles Detected" defaultOpen>
-              <TagEditor tags={jobRoles} onChange={setJobRoles} placeholder="e.g. Software Engineer…" scheme="teal" />
-            </Section>
-
-            <Section title="Experience Information" defaultOpen>
-              <div className="space-y-2.5">
-                {experience.length > 0 ? (
-                  experience.map((line, i) => (
-                    <div key={i} className="flex items-start gap-3 group">
-                      <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ background: "#34BA98" }} />
-                      <p className="text-ink-900 text-sm flex-1 leading-relaxed">{line}</p>
-                      <button
-                        onClick={() => setExperience(experience.filter((_, j) => j !== i))}
-                        className="opacity-0 group-hover:opacity-100 text-ink-600 hover:text-red-600 transition-all flex-shrink-0 mt-0.5"
-                      >
-                        <X size={13} />
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-ink-600 text-sm italic">No experience information extracted.</p>
-                )}
-              </div>
-            </Section>
-
-            <Section title="Soft Skills" defaultOpen={false}>
-              <p className="text-ink-600 text-xs mb-3">Add soft skills manually or from your resume</p>
-              <TagEditor tags={softSkills} onChange={setSoftSkills} placeholder="e.g. Communication, Leadership…" scheme="gold" />
-            </Section>
-
-            {/* Feedback */}
-            {applySuccess && (
-              <div className="flex items-center gap-2.5 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 animate-fade-in">
-                <CheckCircle size={16} style={{ color: "#059669", flexShrink: 0 }} />
-                <p className="text-emerald-800 text-sm font-medium">{applySuccess}</p>
-              </div>
-            )}
-            {applyError && (
-              <div className="flex items-center gap-2.5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 animate-fade-in">
-                <AlertCircle size={16} style={{ color: "#DC2626", flexShrink: 0 }} />
-                <p className="text-red-700 text-sm">{applyError}</p>
-              </div>
-            )}
-
-            {/* Action buttons */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <button onClick={handleApply} disabled={applying} className="btn-green flex items-center gap-2 px-6 py-3 text-sm">
-                {applying
-                  ? <><Loader2 size={15} className="animate-spin" /> Saving…</>
-                  : <><Save size={15} /> Save to Profile</>
-                }
-              </button>
-              <button
-                onClick={() => { setFile(null); setParsed(null); setUploadError(""); setApplySuccess(""); setApplyError(""); }}
-                className="btn-ghost px-5 py-3 text-sm"
-              >
-                Upload Different File
-              </button>
+              </span>
             </div>
-          </div>
-        )}
+          ))}
+        </section>
       </div>
+      <div className="dashboard-columns">
+        <section className="panel">
+          <div className="card-heading">
+            <h3>Suggestions for a stronger résumé</h3>
+            <Sparkles size={17} color="#a187d0" />
+          </div>
+          {analysis ? (
+            <div className="suggestion-list">
+              {(analysis.suggestions.length
+                ? analysis.suggestions
+                : [
+                    "All eight completeness checks passed. Tailor your projects and experience to your target role.",
+                  ]
+              ).map((s) => (
+                <div key={s}>
+                  <span className="suggestion-dot" />
+                  <p>{s}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="muted">
+              Personalized feedback appears after your upload. Scores are based
+              on transparent structural checks, not an ATS or grammar service.
+            </p>
+          )}
+        </section>
+        <section className="resume-preview-card">
+          <div className="paper-preview" aria-hidden="true">
+            <strong>YOUR NEXT CHAPTER</strong>
+            <span className="paper-line short" />
+            <span className="paper-rule" />
+            {Array.from({ length: 9 }, (_, i) => (
+              <span
+                className={`paper-line ${i % 3 === 0 ? "short" : ""}`}
+                key={i}
+              />
+            ))}
+          </div>
+          <div>
+            <span className="eyebrow">A PROFILE THAT REFLECTS YOU</span>
+            <h3>More than a document.</h3>
+            <p>Your résumé is the starting point for your next opportunity.</p>
+            <Link to="/profile">
+              View my profile <ArrowRight size={14} />
+            </Link>
+          </div>
+        </section>
+      </div>
+      {resume && (
+        <section className="panel parsed-review">
+          <div className="card-heading">
+            <div>
+              <h3>Review extracted information</h3>
+              <p className="muted">
+                {resume.filename} ·{" "}
+                {resume.parsed_information?.parser_mode?.replaceAll("_", " ") ||
+                  "Resume extraction"}
+              </p>
+            </div>
+            <FileText size={22} color="#a08ac9" />
+          </div>
+          {resume.parsed_information?.parse_error && (
+            <div className="error-banner">
+              Parsing was incomplete. Enter your details below or edit your
+              profile manually.
+            </div>
+          )}
+          <div className="parsed-fields">
+            {[
+              ["technical_skills", "Technical skills"],
+              ["education", "Education"],
+              ["job_roles", "Roles"],
+              ["experience", "Experience"],
+            ].map(([key, label]) => (
+              <label key={key}>
+                {label}
+                <small>One item per line · correct anything we missed</small>
+                <textarea
+                  rows={5}
+                  value={fields[key] || ""}
+                  onChange={(e) =>
+                    setFields({ ...fields, [key]: e.target.value })
+                  }
+                />
+              </label>
+            ))}
+          </div>
+          <div className="review-actions">
+            <p className="muted">
+              Skills replace your profile’s technical skills. Existing
+              education, role, and experience are kept.
+            </p>
+            <button className="primary" disabled={saving} onClick={save}>
+              {saving ? "Saving…" : "Save confirmed details"}
+              <Check size={15} />
+            </button>
+          </div>
+        </section>
+      )}
     </DashboardLayout>
   );
 }

@@ -1,0 +1,39 @@
+{
+  "survey": {
+    "url": "https://huggingface.co/datasets/dyno7/career_recommender/resolve/72b6754/career_recommender.csv",
+    "license": "MIT (publisher metadata)",
+    "sha256": "2945ebfcee5997e53d1cc95fbfa1bc92b4dbe930a7988c0d28e4325a89b5f31f",
+    "raw_rows": 1195,
+    "retained_rows": 359,
+    "class_counts": {
+      "Software Developer": 138,
+      "Data Scientist": 17,
+      "Educator": 38,
+      "Mechanical Engineer": 40,
+      "Finance Analyst": 14,
+      "Marketing Specialist": 19,
+      "Web Developer": 15,
+      "Business Intelligence Analyst": 44,
+      "Civil Engineer": 26,
+      "Software QA Engineer": 8
+    },
+    "transformation": "Removed names, gender, interests and identifiers; mapped first job titles to broad categories; deduplicated feature text; removed categories with fewer than 8 rows."
+  },
+  "onet": {
+    "url": "https://www.onetcenter.org/dl_files/database/db_31_0_csv/software_skills.csv",
+    "version": "31.0",
+    "license": "CC BY 4.0",
+    "sha256": "6aabb96b464288db849580e6510530efff3f80e25dde2bb23f1fc36bb526b016"
+  },
+  "limitations": [
+    "Self-reported first-job survey, not longitudinal LinkedIn transitions.",
+    "Small, imbalanced sample; broad label mappings are curated.",
+    "No identified SemEval career benchmark; no claim of SemEval validation."
+  ],
+  "onet_occupations": {
+    "url": "https://www.onetcenter.org/dl_files/database/db_31_0_csv/occupation_data.csv",
+    "version": "31.0",
+    "license": "CC BY 4.0",
+    "sha256": "a09eae1d6609686e44e05b7290993a1c8b523d8ca224bc0eedc194c855c3ee02"
+  }
+}

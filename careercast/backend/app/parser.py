@@ -4,6 +4,8 @@ import json
 import re
 from pathlib import Path
 from typing import Dict, List
+from functools import lru_cache
+from .intelligence import ALIASES, canonical
 
 # ── Text extraction ────────────────────────────────────────────────────────────
 
@@ -99,15 +101,21 @@ EXPERIENCE_PATTERNS = [
 ]
 
 
+@lru_cache(maxsize=1)
 def _load_spacy():
     """Load spaCy model, falling back to a blank English model if needed."""
     import spacy
     try:
-        return spacy.load("en_core_web_sm")
+        nlp = spacy.load("en_core_web_sm")
     except OSError:
         # Model not downloaded – use a blank pipeline (still works for our
         # rule-based patterns, just won't have pre-trained NER).
-        return spacy.blank("en")
+        nlp = spacy.blank("en")
+    if not any(name in nlp.pipe_names for name in ("parser", "senter", "sentencizer")):
+        nlp.add_pipe("sentencizer")
+    ruler = nlp.add_pipe("entity_ruler", config={"overwrite_ents": False})
+    ruler.add_patterns([{"label": "SKILL", "pattern": [{"LOWER": t} for t in s.split()]} for s in TECHNICAL_SKILLS_LIST + list(ALIASES)])
+    return nlp
 
 
 def parse_resume(text: str) -> Dict[str, List[str]]:
@@ -127,6 +135,7 @@ def parse_resume(text: str) -> Dict[str, List[str]]:
         if re.search(pattern, lower_text):
             found_skills.append(skill.title() if len(skill) > 3 else skill.upper())
 
+    found_skills = sorted(set(canonical(s) for s in found_skills) | {canonical(e.text) for e in doc.ents if e.label_ == "SKILL"})
     # 2. Education – sentence-level keyword detection
     education_lines: List[str] = []
     seen_edu = set()
@@ -168,4 +177,6 @@ def parse_resume(text: str) -> Dict[str, List[str]]:
         "job_roles": found_roles[:10],
         "experience": found_experience[:8],
         "raw_text_preview": text[:500],
+        "institutions": sorted({e.text for e in doc.ents if e.label_ == "ORG" and any(k in e.text.lower() for k in ("university", "college", "institute"))}),
+        "parser_mode": "spacy_ner_and_rules" if "ner" in nlp.pipe_names else "spacy_rules_only",
     }

@@ -180,6 +180,8 @@ def apply_parsed_to_profile(
         profile.previous_role = payload.job_roles[0]
     if payload.experience and not profile.work_experience:
         profile.work_experience = payload.experience[0]
+    if payload.education and not profile.qualification:
+        profile.qualification = payload.education[0]
 
     db.commit()
     return {"detail": "Profile updated with extracted resume data."}

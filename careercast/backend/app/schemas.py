@@ -1,10 +1,11 @@
 """Pydantic schemas for request/response validation."""
+
 from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional, List
 from datetime import datetime
 
-
 # ── Auth ──────────────────────────────────────────────────────────────────────
+
 
 class UserRegister(BaseModel):
     name: str
@@ -58,6 +59,7 @@ class UserOut(BaseModel):
 
 # ── Profile ───────────────────────────────────────────────────────────────────
 
+
 class ProfileBase(BaseModel):
     qualification: Optional[str] = None
     degree: Optional[str] = None
@@ -69,6 +71,46 @@ class ProfileBase(BaseModel):
     work_experience: Optional[str] = None
     previous_role: Optional[str] = None
     certifications: Optional[str] = None
+
+    @field_validator("technical_skills", "soft_skills")
+    @classmethod
+    def validate_skills(cls, values):
+        if values is None:
+            return None
+        if len(values) > 100:
+            raise ValueError("Use no more than 100 skills per category")
+        result = []
+        for value in values:
+            value = value.strip()
+            if not value or len(value) > 80:
+                raise ValueError("Each skill must contain 1 to 80 characters")
+            if value.lower() not in [s.lower() for s in result]:
+                result.append(value)
+        return result
+
+    @field_validator("graduation_year")
+    @classmethod
+    def validate_year(cls, value):
+        if value in (None, ""):
+            return value
+        if not value.isdigit() or not 1950 <= int(value) <= datetime.now().year + 15:
+            raise ValueError("Enter a valid graduation year")
+        return value
+
+    @field_validator(
+        "qualification",
+        "degree",
+        "specialization",
+        "institution",
+        "work_experience",
+        "previous_role",
+        "certifications",
+    )
+    @classmethod
+    def validate_profile_text(cls, value):
+        if value and len(value) > 500:
+            raise ValueError("Keep this field within 500 characters")
+        return value.strip() if value else value
 
 
 class ProfileCreate(ProfileBase):
@@ -89,6 +131,7 @@ class ProfileOut(ProfileBase):
 
 
 # ── Resume ────────────────────────────────────────────────────────────────────
+
 
 class ParsedResumeInfo(BaseModel):
     technical_skills: List[str] = []
