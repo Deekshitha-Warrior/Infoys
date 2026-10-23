@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, AlertCircle, ArrowRight, Leaf } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  AlertCircle,
+  ArrowRight,
+  BrainCircuit,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import AuthVisual from "../components/AuthVisual";
 
 /* ── Ivory background with mint dot-grid ──────────────────────────────── */
 function PageBg() {
@@ -112,8 +119,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative">
+    <div className="auth-page min-h-screen flex items-center justify-center px-4 relative">
       <PageBg />
+      <AuthVisual />
 
       <div className="relative z-10 w-full max-w-md animate-scale-in">
         {/* Logo */}
@@ -125,7 +133,7 @@ export default function LoginPage() {
               boxShadow: "0 8px 24px rgb(118 83 220 / 0.30)",
             }}
           >
-            <Leaf size={26} className="text-white" />
+            <BrainCircuit size={26} className="text-white" />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight">
             <span className="text-ink-900">Career</span>

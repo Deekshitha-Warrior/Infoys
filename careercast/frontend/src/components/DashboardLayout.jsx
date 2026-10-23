@@ -2,10 +2,10 @@ import React from "react";
 import Sidebar from "./Sidebar";
 import TopNav from "./TopNav";
 import "../workspace.css";
-import "../premium.css";
+import "../standard.css";
 export default function DashboardLayout({ title, children }) {
   return (
-    <div className="cc-workspace">
+    <div className="cc-workspace standard-workspace">
       <Sidebar />
       <div className="workspace-body">
         <TopNav title={title} />

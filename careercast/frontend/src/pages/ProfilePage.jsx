@@ -250,17 +250,13 @@ export default function ProfilePage() {
 
   return (
     <DashboardLayout title="My Profile">
-      <div className="max-w-3xl mx-auto">
+      <div className="standard-profile">
         {/* Header */}
-        <div
-          className="flex items-start justify-between mb-6 animate-slide-up"
-          style={{ animationFillMode: "both" }}
-        >
+        <div className="page-heading" style={{ animationFillMode: "both" }}>
           <div>
-            <h2 className="text-2xl font-bold text-ink-900">
-              Profile Information
-            </h2>
-            <p className="text-ink-600 text-sm mt-1">
+            <p className="eyebrow">THE FOUNDATION OF YOUR NEXT CHAPTER</p>
+            <h1>My Profile</h1>
+            <p className="muted">
               Keep your details current for accurate career insights.
             </p>
           </div>
@@ -274,7 +270,7 @@ export default function ProfilePage() {
                 color: "#584092",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#C7F0E4";
+                e.currentTarget.style.background = "#E9E2FA";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = "#EFEBFC";

@@ -19,6 +19,7 @@ import {
 import DashboardLayout from "../components/DashboardLayout";
 import { useAuth } from "../context/AuthContext";
 import api from "../api";
+import ReferenceDashboard from "../components/ReferenceDashboard";
 const titles = {
   "/dashboard": "Overview",
   "/careers": "Career Intelligence",
@@ -27,6 +28,24 @@ const titles = {
   "/models": "Model Evaluation",
   "/settings": "Settings",
   "/help": "Help & support",
+};
+const descriptions = {
+  "/dashboard":
+    "A little clarity. A lot of possibility. Here’s where you stand.",
+  "/careers": "Explore the paths that connect your skills to your ambitions.",
+  "/skills": "Know your strengths. Discover what to build next.",
+  "/learning": "Small steps today. Meaningful progress tomorrow.",
+  "/models": "Understand the evidence behind your career recommendations.",
+  "/settings": "Manage your account and the progress saved on this device.",
+  "/help": "Everything you need to find your way around CareerCast.",
+};
+const gateLabels = {
+  baseline_top1_65: "Baseline accuracy · target 65%",
+  ensemble_f1_80: "Ensemble macro F1 · target 80%",
+  top5_recall_90: "Top-5 career recall · target 90%",
+  parser_200_resumes: "Résumé parsing · 200-document benchmark",
+  semeval_linkedin: "External benchmark validation",
+  embedding_mean_cosine_85: "Skill synonym similarity · target 85%",
 };
 const resources = {
   python: "https://docs.python.org/3/tutorial/",
@@ -237,7 +256,9 @@ export default function IntelligencePage() {
   );
   return (
     <DashboardLayout title={title}>
-      <div className="page-heading">
+      <div
+        className={`page-heading ${pathname === "/dashboard" ? "dashboard-page-heading" : ""}`}
+      >
         <div>
           <p className="eyebrow">YOUR CAREER, WITH CLARITY</p>
           <h1>
@@ -246,15 +267,7 @@ export default function IntelligencePage() {
               : title}
           </h1>
           <p className="muted">
-            {pathname === "/dashboard"
-              ? "A little clarity. A lot of possibility. Here’s where you stand."
-              : pathname === "/careers"
-                ? "Explore the paths that connect your skills to your ambitions."
-                : pathname === "/skills"
-                  ? "Know your strengths. Discover what to build next."
-                  : pathname === "/learning"
-                    ? "Small steps today. Meaningful progress tomorrow."
-                    : "Your personal career workspace."}
+            {descriptions[pathname] || "Your personal career workspace."}
           </p>
         </div>
         {["/dashboard", "/careers", "/skills"].includes(pathname) && (
@@ -296,177 +309,17 @@ export default function IntelligencePage() {
       ) : (
         <>
           {pathname === "/dashboard" && (
-            <>
-              <section className="overview-hero">
-                <div className="hero-copy">
-                  <span className="hero-pill">
-                    <Sparkles size={14} />
-                    PERSONALIZED CAREER INTELLIGENCE
-                  </span>
-                  <h2>
-                    Your potential.
-                    <br />
-                    <span>A clearer direction.</span>
-                  </h2>
-                  <p>
-                    Your skills tell a story. Discover the careers
-                    <br className="desktop-break" /> that could be your next
-                    chapter.
-                  </p>
-                  <Link to="/careers" className="hero-button">
-                    Explore my career paths <ArrowUpRight size={17} />
-                  </Link>
-                </div>
-                <div className="orbit-art" aria-hidden="true">
-                  <div className="orbit orbit-one" />
-                  <div className="orbit orbit-two" />
-                  <div className="orbit-center">
-                    <Target size={88} strokeWidth={1.2} />
-                  </div>
-                  <div className="float-chip chip-one">
-                    <Code2 size={20} />
-                    Your skills
-                  </div>
-                  <div className="float-chip chip-two">
-                    <Sparkles size={20} />
-                    Your possibilities
-                  </div>
-                  <span className="star star-one">✦</span>
-                  <span className="star star-two">✧</span>
-                </div>
-              </section>
-              <div className="stats-grid">
-                {[
-                  [
-                    Layers3,
-                    skills.length,
-                    "Skills in your profile",
-                    "Every skill opens a door",
-                    "purple",
-                  ],
-                  [
-                    Target,
-                    careers.length,
-                    "Career paths explored",
-                    report
-                      ? "Based on your last analysis"
-                      : "Run your first analysis",
-                    "blue",
-                  ],
-                  [
-                    FileText,
-                    analysis ? `${analysis.score}%` : "—",
-                    "Résumé completeness",
-                    analysis
-                      ? "Structural checks, not ATS scoring"
-                      : "Upload to get feedback",
-                    "green",
-                  ],
-                  [
-                    GraduationCap,
-                    `${completion}%`,
-                    "Profile complete",
-                    "Make your recommendations stronger",
-                    "orange",
-                  ],
-                ].map(([Icon, value, label, note, color]) => (
-                  <article className="stat-card" key={label}>
-                    <div className={`stat-icon ${color}`}>
-                      <Icon size={20} />
-                    </div>
-                    <small>{label}</small>
-                    <strong>{value}</strong>
-                    <p>{note}</p>
-                  </article>
-                ))}
-              </div>
-              <div className="dashboard-columns">
-                <section className="panel">
-                  <CardTitle title="Your recommended paths" to="/careers" />
-                  {careers.length ? (
-                    <div className="career-list">
-                      {careers.map((c, i) => (
-                        <Link
-                          to={`/skills?career=${encodeURIComponent(c.career)}`}
-                          key={c.career}
-                          className="career-row"
-                        >
-                          <span className={`career-index tone-${i}`}>
-                            {i + 1}
-                          </span>
-                          <div>
-                            <strong>{c.career}</strong>
-                            <small>
-                              {c.matched_skills.length} matching core skills
-                            </small>
-                          </div>
-                          <span className="career-percent">
-                            {c.alignment}%<small>alignment</small>
-                          </span>
-                          <ArrowUpRight size={17} />
-                        </Link>
-                      ))}
-                    </div>
-                  ) : (
-                    <Empty />
-                  )}
-                </section>
-                <section className="panel">
-                  <CardTitle title="Your skill snapshot" to="/skills" />
-                  {target ? (
-                    <>
-                      <div className="snapshot">
-                        <Ring value={target.alignment} />
-                        <div>
-                          <span className="green-pill">TOP-RANKED PATH</span>
-                          <h3>{target.career}</h3>
-                          <p className="muted">
-                            {target.confidence}% model confidence
-                          </p>
-                        </div>
-                      </div>
-                      <div className="skill-tags">
-                        {skills.slice(0, 8).map((s) => (
-                          <span key={s}>{s}</span>
-                        ))}
-                      </div>
-                      <div className="tip">
-                        <Sparkles size={19} />
-                        <p>
-                          Start with{" "}
-                          <strong>
-                            {target.missing_skills[0] || "a practical project"}
-                          </strong>{" "}
-                          to build toward this path.
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="empty-state compact">
-                      <ShieldCheck size={38} />
-                      <h3>Built around you</h3>
-                      <p>
-                        Your skill snapshot appears after your first career
-                        analysis.
-                      </p>
-                    </div>
-                  )}
-                </section>
-              </div>
-              <section className="next-step">
-                <div className="next-icon">
-                  <BookOpen size={26} />
-                </div>
-                <div>
-                  <span className="eyebrow">KEEP YOUR MOMENTUM</span>
-                  <h3>Your next chapter starts with one skill.</h3>
-                  <p>A focused roadmap, based on the path you choose.</p>
-                </div>
-                <Link className="primary" to="/learning">
-                  Explore learning path <ArrowRight size={16} />
-                </Link>
-              </section>
-            </>
+            <ReferenceDashboard
+              user={user}
+              profile={profile}
+              report={report}
+              analysis={analysis}
+              completion={completion}
+              progress={progress}
+              onGenerate={generate}
+              onExport={exportReport}
+              busy={busy}
+            />
           )}
           {pathname === "/careers" && (
             <>
@@ -872,7 +725,7 @@ function ModelEvaluation({ models }) {
           {Object.entries(models?.gates || {}).map(([key, value]) => (
             <div key={key}>
               <ShieldCheck size={19} />
-              <strong>{key.replaceAll("_", " ")}</strong>
+              <strong>{gateLabels[key] || key.replaceAll("_", " ")}</strong>
               <span className={value === true ? "green-pill" : "lavender-pill"}>
                 {value === true
                   ? "Passed"

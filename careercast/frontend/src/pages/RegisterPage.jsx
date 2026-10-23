@@ -5,10 +5,11 @@ import {
   EyeOff,
   AlertCircle,
   ArrowRight,
-  Leaf,
+  BrainCircuit,
   Check,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import AuthVisual from "../components/AuthVisual";
 
 function PageBg() {
   return (
@@ -186,8 +187,9 @@ export default function RegisterPage() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 relative">
+    <div className="auth-page min-h-screen flex items-center justify-center px-4 py-10 relative">
       <PageBg />
+      <AuthVisual />
 
       <div className="relative z-10 w-full max-w-md animate-scale-in">
         {/* Logo */}
@@ -201,7 +203,7 @@ export default function RegisterPage() {
               boxShadow: "0 8px 24px rgb(118 83 220 / 0.28)",
             }}
           >
-            <Leaf size={22} className="text-white" />
+            <BrainCircuit size={22} className="text-white" />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight">
             <span className="text-ink-900">Career</span>

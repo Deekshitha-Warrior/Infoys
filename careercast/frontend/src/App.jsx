@@ -7,6 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ProfilePage from "./pages/ProfilePage";
 import ResumeUploadPage from "./pages/ResumeUploadPage";
 import IntelligencePage from "./pages/IntelligencePage";
+import "./standard.css";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();

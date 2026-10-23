@@ -23,7 +23,7 @@ export default function TopNav({ title }) {
       <div className="topbar-right">
         <span className="ai-badge">
           <Sparkles size={14} />
-          Career intelligence
+          Your workspace
         </span>
         <Link className="user-menu" to="/profile">
           <span className="avatar">

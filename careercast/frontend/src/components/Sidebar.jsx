@@ -57,10 +57,14 @@ export default function Sidebar() {
       </nav>
       <div className="sidebar-guide">
         <span>✦</span>
-        <h3>Designed for your next move.</h3>
-        <p>A clearer view of your strengths. A more intentional way forward.</p>
-        <NavLink to="/profile">
-          Build your profile <ArrowUpRight size={15} />
+        <h3>
+          Big dreams
+          <br />
+          need a clear plan.
+        </h3>
+        <p>Let’s build yours.</p>
+        <NavLink to="/learning" aria-label="Explore your learning path">
+          Explore your path <ArrowUpRight size={15} />
         </NavLink>
       </div>
       <nav className="sidebar-bottom">
