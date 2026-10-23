@@ -38,7 +38,9 @@ export default function Sidebar() {
           <small>YOUR NEXT CHAPTER</small>
         </span>
       </NavLink>
-      <p className="nav-caption">WORKSPACE</p>
+      <p className="nav-caption">
+        YOUR WORKSPACE <span>01 — 07</span>
+      </p>
       <nav aria-label="Main navigation">
         {items.map(([to, label, Icon]) => (
           <NavLink
@@ -55,8 +57,8 @@ export default function Sidebar() {
       </nav>
       <div className="sidebar-guide">
         <span>✦</span>
-        <h3>Your future starts here.</h3>
-        <p>Turn the skills you have into the career you want.</p>
+        <h3>Designed for your next move.</h3>
+        <p>A clearer view of your strengths. A more intentional way forward.</p>
         <NavLink to="/profile">
           Build your profile <ArrowUpRight size={15} />
         </NavLink>

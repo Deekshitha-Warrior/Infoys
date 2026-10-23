@@ -6,19 +6,24 @@ export default function TopNav({ title }) {
   const { user } = useAuth();
   return (
     <header className="cc-topbar">
+      <div className="workspace-breadcrumb">
+        <span>Workspace</span>
+        <span aria-hidden="true">/</span>
+        <strong>{title}</strong>
+      </div>
       <form action="/careers" className="workspace-search">
         <Search size={17} />
         <input
           aria-label="Search careers"
           name="q"
-          placeholder="Search careers, skills, possibilities…"
+          placeholder="Find your next direction"
         />
         <kbd>↵</kbd>
       </form>
       <div className="topbar-right">
         <span className="ai-badge">
           <Sparkles size={14} />
-          AI workspace
+          Career intelligence
         </span>
         <Link className="user-menu" to="/profile">
           <span className="avatar">

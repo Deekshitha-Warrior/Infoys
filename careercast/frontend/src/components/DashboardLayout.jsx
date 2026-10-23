@@ -2,6 +2,7 @@ import React from "react";
 import Sidebar from "./Sidebar";
 import TopNav from "./TopNav";
 import "../workspace.css";
+import "../premium.css";
 export default function DashboardLayout({ title, children }) {
   return (
     <div className="cc-workspace">
