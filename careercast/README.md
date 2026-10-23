@@ -18,6 +18,35 @@ actions, profile-driven dashboards, and transparent model evaluation.
 The UI follows the supplied visual references. Placement feeds, mock interviews,
 live market statistics, and ATS/grammar vendor scores are not fabricated.
 
+## Authentication
+
+CareerCast uses email/password authentication built with **FastAPI**, **JWT**,
+and **bcrypt**.
+
+| Component | Technology and behavior |
+|---|---|
+| Registration and login | FastAPI JSON endpoints: `POST /api/auth/register` and `POST /api/auth/login` |
+| Password storage | Passlib with bcrypt hashes; plaintext passwords are not stored |
+| Access tokens | `python-jose` signs JWTs with HS256; tokens expire after 8 hours and identify the user through the `sub` claim |
+| Protected API requests | FastAPI `OAuth2PasswordBearer` extracts `Authorization: Bearer <token>`; the backend verifies the token and loads its user from the database |
+| Account data | SQLAlchemy with SQLite by default; profiles, resumes, and prediction history are scoped to the authenticated account |
+| Frontend session | React AuthContext stores the token as `cc_token` and user details as `cc_user` in browser localStorage; an Axios interceptor attaches the token |
+| Protected pages and logout | React protected routes require a signed-in user; logout clears the local session; API 401 responses clear it and redirect to login |
+
+Registration rejects duplicate email addresses. Login checks the supplied
+password against the stored bcrypt hash before issuing a token. Both successful
+registration and login return an access token and basic user details.
+
+The current implementation uses bearer tokens in localStorage, rather than
+HttpOnly cookies. Logout removes the browser's token; it does not revoke an
+already issued token on the server. There is no refresh-token flow, email
+verification, password-reset flow, social login, or multi-factor authentication.
+Set a strong private `SECRET_KEY` in the backend process environment before a
+shared deployment; the source includes a development fallback key.
+
+Implementation: `backend/app/auth.py`, `backend/app/routers/auth.py`,
+`frontend/src/context/AuthContext.jsx`, and `frontend/src/api.js`.
+
 ## Milestone status
 
 Milestone 1 and 2 **implementation workflows are present**, but the PDF's complete
