@@ -12,7 +12,7 @@ actions, profile-driven dashboards, and transparent model evaluation.
   cross-validated hyperparameter tuning and an untouched held-out split.
 - TF-IDF, multi-hot skills, and averaged fine-tuned Sentence-BERT skill vectors.
 - Top-K ranking, individual model probabilities, core-skill alignment, skill
-  gaps, prediction history, JSON report export, and a learning roadmap.
+  gaps, prediction history, personalized PDF report export, and a learning roadmap.
 - Evaluation page showing actual metrics, acceptance gates, and data limits.
 
 The UI follows the supplied visual references. Placement feeds, mock interviews,

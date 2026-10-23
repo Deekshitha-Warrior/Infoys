@@ -17,3 +17,4 @@ aiofiles>=23.2.1
 scikit-learn==1.9.1
 xgboost==3.4.1
 joblib==1.6.0
+reportlab>=4.2,<5

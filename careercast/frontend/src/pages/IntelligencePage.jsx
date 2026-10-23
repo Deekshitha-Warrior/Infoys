@@ -182,17 +182,31 @@ export default function IntelligencePage() {
       setBusy(false);
     }
   }
-  function exportReport() {
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify({ profile, report, models }, null, 2)], {
-        type: "application/json",
-      }),
-    );
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "careercast-report.json";
-    a.click();
-    URL.revokeObjectURL(url);
+  async function exportReport() {
+    setBusy(true);
+    setError("");
+    try {
+      const response = await api.get("/api/intelligence/report.pdf", {
+        params: { career: target?.career },
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(response.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "careercast-career-report.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) {
+      let detail = "Could not export the PDF. Please try again.";
+      try {
+        detail = JSON.parse(await e.response.data.text()).detail || detail;
+      } catch {}
+      setError(detail);
+    } finally {
+      setBusy(false);
+    }
   }
   function toggle(skill) {
     const next = {
@@ -241,7 +255,7 @@ export default function IntelligencePage() {
           <div className="heading-actions">
             <button
               className="secondary"
-              disabled={!report}
+              disabled={!report || busy}
               onClick={exportReport}
             >
               <Download size={16} />

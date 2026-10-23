@@ -60,6 +60,41 @@ def profile_payload():
     }
 
 
+def test_pdf_export_is_personalized_and_account_scoped(client):
+    import pymupdf
+
+    assert client.get("/api/intelligence/report.pdf").status_code == 401
+    headers = account(client)
+    assert (
+        client.get("/api/intelligence/report.pdf", headers=headers).status_code == 422
+    )
+    client.post("/api/profile/me", headers=headers, json=profile_payload())
+    result = client.post("/api/intelligence/predict", headers=headers).json()
+    career = result["recommendations"][0]["career"]
+    response = client.get(
+        "/api/intelligence/report.pdf", headers=headers, params={"career": career}
+    )
+    assert response.status_code == 200, response.text
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.headers["cache-control"] == "no-store"
+    assert response.content.startswith(b"%PDF-")
+    pdf = pymupdf.open(stream=response.content, filetype="pdf")
+    text = "\n".join(page.get_text() for page in pdf)
+    assert "Test Student" in text and career in text
+    assert "What to get good at" in text and "Evidence to keep" in text
+    assert all(s in text for s in result["recommendations"][0]["missing_skills"])
+    other = account(client, "different@example.com")
+    assert client.get("/api/intelligence/report.pdf", headers=other).status_code == 422
+    assert (
+        client.get(
+            "/api/intelligence/report.pdf",
+            headers=headers,
+            params={"career": "made up career"},
+        ).status_code
+        == 422
+    )
+
+
 def test_auth_profile_prediction_history_and_isolation(client):
     assert client.post("/api/intelligence/predict").status_code == 401
     headers = account(client)

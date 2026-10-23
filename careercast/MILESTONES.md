@@ -15,7 +15,7 @@ the benchmark thresholds in the supplied project specification.
 | Ranking | Top-K with individual and ensemble confidence, 80/20 probability/alignment scoring |
 | Workspace | Dashboard, career comparison, skill analysis, learning roadmap, resume feedback, profile and evaluation |
 | Persistence | Account-scoped prediction history; stale profile/model detection |
-| Export | Downloadable JSON profile/prediction/evaluation report |
+| Export | Personalized PDF with recommended careers, strengths, missing skills, practice exercises and resume suggestions |
 
 ## Public data collected
 

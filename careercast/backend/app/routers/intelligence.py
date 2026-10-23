@@ -1,6 +1,7 @@
 import json
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from fastapi.responses import Response
 from ..auth import get_current_user
 from ..database import get_db
 from ..models import User, Profile, Resume, Prediction
@@ -8,6 +9,51 @@ from ..intelligence import predict, model_report, resume_analysis, profile_hash
 from .profile import _profile_to_out
 
 router = APIRouter(prefix="/api/intelligence", tags=["career intelligence"])
+
+
+@router.get("/report.pdf")
+def export_pdf(
+    career: str = Query(None, max_length=100),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    from ..pdf_report import build_career_pdf
+
+    profile = db.query(Profile).filter_by(user_id=user.user_id).first()
+    if not profile:
+        raise HTTPException(422, "Complete your profile before exporting a report.")
+    profile_data = _profile_to_out(profile, user)
+    try:
+        report = predict(profile_data)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    if career and career not in {row["career"] for row in report["recommendations"]}:
+        raise HTTPException(
+            422,
+            "Refresh your analysis and select a recommended career before exporting.",
+        )
+    latest = (
+        db.query(Resume)
+        .filter_by(user_id=user.user_id)
+        .order_by(Resume.resume_id.desc())
+        .first()
+    )
+    feedback = (
+        resume_analysis(
+            latest.extracted_text or "", json.loads(latest.parsed_information or "{}")
+        )
+        if latest
+        else None
+    )
+    content = build_career_pdf(profile_data, report, career, feedback)
+    return Response(
+        content,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": 'attachment; filename="careercast-career-report.pdf"',
+            "Cache-Control": "no-store",
+        },
+    )
 
 
 @router.get("/models")
