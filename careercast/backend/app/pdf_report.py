@@ -51,7 +51,9 @@ PRACTICE = {
 }
 
 
-def build_career_pdf(profile, report, target_career=None, resume=None):
+def build_career_pdf(
+    profile, report, target_career=None, resume=None, report_type="overview"
+):
     regular, bold = "Helvetica", "Helvetica-Bold"
     for normal, heavy in [
         ("C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/arialbd.ttf"),
@@ -135,6 +137,146 @@ def build_career_pdf(profile, report, target_career=None, resume=None):
         canvas.setFillColor(muted)
         canvas.drawString(20 * mm, 11 * mm, "Private career development report")
         canvas.drawRightString(190 * mm, 11 * mm, f"Page {document.page}")
+
+    if report_type in ("careers", "skills"):
+        title = (
+            "Career intelligence report"
+            if report_type == "careers"
+            else "Skill analysis report"
+        )
+        doc.title = "CareerCast - " + title
+        story = [
+            p(title, "Title"),
+            p(name, "Heading2"),
+            p("Generated " + datetime.now().strftime("%d %B %Y"), "Small"),
+        ]
+        if report_type == "careers":
+            story += [
+                p("Compare your career options", "Heading1"),
+                p(
+                    "These paths are ranked using your saved profile. Compare confidence with skill alignment, then choose the direction you want to explore."
+                ),
+            ]
+            rows = [
+                [
+                    p("Career", "Label"),
+                    p("Alignment", "Label"),
+                    p("Confidence", "Label"),
+                ]
+            ]
+            rows += [
+                [p(c["career"]), p(f"{c['alignment']}%"), p(f"{c['confidence']}%")]
+                for c in careers
+            ]
+            table = Table(rows, colWidths=[100 * mm, 34 * mm, 36 * mm], repeatRows=1)
+            table.setStyle(
+                TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, 0), pale),
+                        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                        ("TOPPADDING", (0, 0), (-1, -1), 9),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+                    ]
+                )
+            )
+            story += [
+                table,
+                Spacer(1, 5 * mm),
+                p("Selected direction: " + target["career"], "Heading2"),
+                p("Matching strengths: " + joined(target["matched_skills"])),
+                p("Main development areas: " + joined(target["missing_skills"])),
+                p(
+                    "Confidence is an uncalibrated class probability, not a hiring probability. Alignment reflects a curated core-skill checklist.",
+                    "Small",
+                ),
+                PageBreak(),
+                p("Why each path appears", "Heading1"),
+            ]
+            for c in careers:
+                scores = " | ".join(
+                    f"{label.replace('_',' ').title()}: {value}%"
+                    for label, value in c["model_scores"].items()
+                )
+                story.append(
+                    KeepTogether(
+                        [
+                            p(c["career"], "Heading2"),
+                            p("Matching skills: " + joined(c["matched_skills"])),
+                            p("Skills to consider: " + joined(c["missing_skills"])),
+                            p(scores, "Small"),
+                            Spacer(1, 3 * mm),
+                        ]
+                    )
+                )
+            story += [
+                p("Choose your next direction", "Heading2"),
+                p(
+                    "Compare these paths with your interests and project experience. Select a target in Skill Analysis and export its separate report for focused practice exercises and a development plan."
+                ),
+            ]
+        else:
+            story += [
+                p("Target career: " + target["career"], "Heading1"),
+                p(f"Core skill alignment: {target['alignment']}%"),
+                p("Your current skill inventory", "Heading2"),
+                p(
+                    joined(
+                        (profile.get("technical_skills") or [])
+                        + (profile.get("soft_skills") or [])
+                    )
+                ),
+                p("Strengths for this target", "Heading2"),
+                p(joined(target["matched_skills"])),
+                p("Skill gaps to close", "Heading2"),
+                p(joined(target["missing_skills"])),
+                p(
+                    "This report focuses only on the selected career. Checklist matches do not certify proficiency; use the exercises to demonstrate what you can do.",
+                    "Small",
+                ),
+                PageBreak(),
+                p("Your focused practice plan", "Heading1"),
+            ]
+            for i, skill in enumerate(target["missing_skills"], 1):
+                exercise = PRACTICE.get(
+                    skill.lower(),
+                    f"Study the fundamentals of {skill}, complete a focused exercise and apply it in a project relevant to {target['career']}.",
+                )
+                story.append(
+                    KeepTogether(
+                        [
+                            p(f"{i:02d}  {skill.title()}", "Heading2"),
+                            p(exercise),
+                            p(
+                                "Ready to move on when: you can explain the concept, complete the task independently, and show tests, results or feedback.",
+                                "Small",
+                            ),
+                            Spacer(1, 3 * mm),
+                        ]
+                    )
+                )
+            if not target["missing_skills"]:
+                story += [
+                    p("All listed core skills are present", "Heading2"),
+                    p(
+                        "Deepen them with an end-to-end project, documented decisions, testing and a mentor review. This checklist does not cover every competency an employer may require."
+                    ),
+                ]
+            story += [
+                p("Build evidence of progress", "Heading2"),
+                p(
+                    "Combine two or three target skills in a portfolio project. Keep a README, working examples, measurable results and feedback. Add a skill to your profile only once you can demonstrate it, then refresh your analysis."
+                ),
+            ]
+        story += [
+            p("Model scope and limitations", "Heading2"),
+            p(
+                report["data_scope"]
+                + " See Model Evaluation in the app for measured quality. No job outcome is guaranteed.",
+                "Small",
+            ),
+        ]
+        doc.build(story, onFirstPage=frame, onLaterPages=frame)
+        return output.getvalue()
 
     story = [
         p("YOUR CAREER, WITH CLARITY", "Label"),

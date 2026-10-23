@@ -186,14 +186,20 @@ export default function IntelligencePage() {
     setBusy(true);
     setError("");
     try {
+      const reportType =
+        pathname === "/skills"
+          ? "skills"
+          : pathname === "/careers"
+            ? "careers"
+            : "overview";
       const response = await api.get("/api/intelligence/report.pdf", {
-        params: { career: target?.career },
+        params: { career: target?.career, report_type: reportType },
         responseType: "blob",
       });
       const url = URL.createObjectURL(response.data);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "careercast-career-report.pdf";
+      a.download = `careercast-${reportType}-report.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();

@@ -78,6 +78,34 @@ def test_pdf_export_is_personalized_and_account_scoped(client):
     assert response.headers["content-type"] == "application/pdf"
     assert response.headers["cache-control"] == "no-store"
     assert response.content.startswith(b"%PDF-")
+    exports = {}
+    for kind in ("careers", "skills"):
+        specialized = client.get(
+            "/api/intelligence/report.pdf",
+            headers=headers,
+            params={"career": career, "report_type": kind},
+        )
+        assert specialized.status_code == 200
+        assert (
+            f"careercast-{kind}-report.pdf"
+            in specialized.headers["content-disposition"]
+        )
+        document = pymupdf.open(stream=specialized.content, filetype="pdf")
+        exports[kind] = "\n".join(page.get_text() for page in document)
+    assert "Career intelligence report" in exports["careers"]
+    assert "Compare your career options" in exports["careers"]
+    assert "Your focused practice plan" not in exports["careers"]
+    assert "Skill analysis report" in exports["skills"]
+    assert "Your focused practice plan" in exports["skills"]
+    assert "Compare your career options" not in exports["skills"]
+    assert (
+        client.get(
+            "/api/intelligence/report.pdf",
+            headers=headers,
+            params={"report_type": "invalid"},
+        ).status_code
+        == 422
+    )
     pdf = pymupdf.open(stream=response.content, filetype="pdf")
     text = "\n".join(page.get_text() for page in pdf)
     assert "Test Student" in text and career in text

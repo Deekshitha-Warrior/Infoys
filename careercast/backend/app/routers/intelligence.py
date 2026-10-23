@@ -1,4 +1,5 @@
 import json
+from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from fastapi.responses import Response
@@ -13,6 +14,7 @@ router = APIRouter(prefix="/api/intelligence", tags=["career intelligence"])
 
 @router.get("/report.pdf")
 def export_pdf(
+    report_type: Literal["overview", "careers", "skills"] = "overview",
     career: str = Query(None, max_length=100),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -45,12 +47,12 @@ def export_pdf(
         if latest
         else None
     )
-    content = build_career_pdf(profile_data, report, career, feedback)
+    content = build_career_pdf(profile_data, report, career, feedback, report_type)
     return Response(
         content,
         media_type="application/pdf",
         headers={
-            "Content-Disposition": 'attachment; filename="careercast-career-report.pdf"',
+            "Content-Disposition": f'attachment; filename="careercast-{report_type}-report.pdf"',
             "Cache-Control": "no-store",
         },
     )
