@@ -82,3 +82,21 @@ a valid substitute for improved data and a fresh external evaluation.
 
 Read `artifacts/evaluation.json`, `artifacts/embedding_evaluation.json`,
 `artifacts/split.json`, and `data/manifest.json` for machine-readable evidence.
+
+## Accuracy-focused Logistic Regression follow-up (23 October 2026)
+
+An additional 48 configurations compare word unigrams/bigrams, character
+3–5-grams, combined features, four regularization strengths, and balanced or
+unweighted classes. Selection uses five-fold accuracy CV on the same 269
+training profiles; the 90 test rows stay excluded from fitting and selection.
+Best training CV accuracy: 58.00%. Held-out accuracy: 52.22% (47/90).
+This is worse than the deployed baseline (55.56%, 50/90), so the deployed
+artifact and acceptance gate remain unchanged. The 65% requirement is not met.
+The holdout has been evaluated previously, so this is not fresh independent
+validation. Do not change the split, labels, or remove difficult test examples
+to raise the reported score. Further progress needs better representative
+labeled profiles and a new untouched external validation cohort.
+
+Reproduce from backend with `python -m ml.tune_logistic`. Full parameters and
+metrics: `artifacts/logistic_accuracy_experiment.json`. This command never
+replaces the deployed bundle.

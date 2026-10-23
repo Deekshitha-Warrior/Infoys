@@ -1,0 +1,35 @@
+{
+  "evaluated_at": "2026-10-23T11:15:36.874076+00:00",
+  "train_rows": 269,
+  "test_rows": 90,
+  "candidate_count": 48,
+  "selection": "Five-fold training-only CV accuracy; frozen seed-42 test split unchanged.",
+  "best_cv_accuracy": 0.5800139762403913,
+  "best_parameters": {
+    "classifier__C": 10,
+    "classifier__class_weight": null,
+    "features__transformer_weights": {
+      "word": 1,
+      "char": 1
+    },
+    "features__word__ngram_range": [
+      1,
+      2
+    ]
+  },
+  "test": {
+    "accuracy": 0.5222,
+    "precision_macro": 0.3486,
+    "recall_macro": 0.3192,
+    "f1_macro": 0.3261,
+    "top5_recall": 0.8889
+  },
+  "target_accuracy": 0.65,
+  "deployed": false,
+  "limitations": [
+    "Previously evaluated small survey holdout; not independent external validation.",
+    "No labels changed, no synthetic rows, no test rows used during fitting or CV selection.",
+    "Existing production model retained; this experiment does not automatically promote models."
+  ],
+  "target_met": false
+}
