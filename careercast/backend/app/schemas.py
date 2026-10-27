@@ -57,6 +57,20 @@ class UserOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class UserNameUpdate(BaseModel):
+    name: str
+
+    @field_validator("name")
+    @classmethod
+    def name_not_empty(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Name cannot be empty")
+        if len(value) > 255:
+            raise ValueError("Name must be 255 characters or fewer")
+        return value
+
+
 # ── Profile ───────────────────────────────────────────────────────────────────
 
 

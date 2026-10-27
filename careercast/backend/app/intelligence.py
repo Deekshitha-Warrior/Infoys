@@ -132,6 +132,126 @@ CAREERS = {
         "python",
         "data analysis",
     ],
+    "Backend Developer": [
+        "python",
+        "java",
+        "rest api",
+        "sql",
+        "docker",
+        "git",
+    ],
+    "Frontend Developer": [
+        "javascript",
+        "html",
+        "css",
+        "react",
+        "accessibility",
+        "git",
+    ],
+    "Mobile App Developer": [
+        "kotlin",
+        "swift",
+        "react native",
+        "mobile development",
+        "rest api",
+        "git",
+    ],
+    "Cloud Engineer": [
+        "aws",
+        "azure",
+        "google cloud",
+        "linux",
+        "docker",
+        "networking",
+    ],
+    "DevOps Engineer": [
+        "linux",
+        "docker",
+        "kubernetes",
+        "ci/cd",
+        "python",
+        "aws",
+    ],
+    "Machine Learning Engineer": [
+        "python",
+        "machine learning",
+        "scikit-learn",
+        "tensorflow",
+        "pandas",
+        "docker",
+    ],
+    "Data Analyst": [
+        "sql",
+        "excel",
+        "data analysis",
+        "statistics",
+        "tableau",
+        "python",
+    ],
+    "UX Designer": [
+        "figma",
+        "user research",
+        "wireframing",
+        "prototyping",
+        "usability testing",
+        "communication",
+    ],
+    "Product Manager": [
+        "product strategy",
+        "roadmapping",
+        "user research",
+        "agile",
+        "communication",
+        "data analysis",
+    ],
+    "Business Analyst": [
+        "business analysis",
+        "requirements gathering",
+        "sql",
+        "excel",
+        "communication",
+        "data analysis",
+    ],
+    "Accountant": [
+        "accounting",
+        "bookkeeping",
+        "financial reporting",
+        "excel",
+        "tax preparation",
+        "attention to detail",
+    ],
+    "Human Resources Specialist": [
+        "recruiting",
+        "employee relations",
+        "human resources",
+        "communication",
+        "organization",
+        "conflict resolution",
+    ],
+    "Sales Representative": [
+        "sales",
+        "negotiation",
+        "communication",
+        "customer relationship management",
+        "presentation",
+        "customer service",
+    ],
+    "Graphic Designer": [
+        "adobe photoshop",
+        "adobe illustrator",
+        "graphic design",
+        "typography",
+        "figma",
+        "creativity",
+    ],
+    "Operations Analyst": [
+        "process improvement",
+        "excel",
+        "sql",
+        "data analysis",
+        "project management",
+        "problem solving",
+    ],
 }
 
 
@@ -226,10 +346,26 @@ def predict(profile, k=5):
             }
         )
     ranked.sort(key=lambda r: r["ranking_score"], reverse=True)
+    ranked_labels = {row["career"] for row in ranked}
+    skill_careers = ranked + [
+        {
+            "career": label,
+            "alignment": round(
+                sum(skill in skills for skill in required)
+                / max(len(required), 1)
+                * 100
+            ),
+            "matched_skills": [skill for skill in required if skill in skills],
+            "missing_skills": [skill for skill in required if skill not in skills],
+        }
+        for label, required in CAREERS.items()
+        if label not in ranked_labels
+    ]
     known = set(bundle["vectorizer"].vocabulary_)
     covered = [s for s in skills if any(t in known for t in s.split())]
     return {
         "recommendations": ranked[:k],
+        "skill_careers": skill_careers,
         "skill_count": len(skills),
         "coverage": round(len(covered) / len(skills) * 100),
         "unrecognized_skills": sorted(skills - set(covered)),

@@ -44,6 +44,14 @@ export function AuthProvider({ children }) {
     return data;
   }, []);
 
+  const updateName = useCallback(async (name) => {
+    const res = await api.put("/api/auth/me", { name });
+    const nextUser = { ...user, ...res.data };
+    localStorage.setItem("cc_user", JSON.stringify(nextUser));
+    setUser(nextUser);
+    return nextUser;
+  }, [user]);
+
   const logout = useCallback(() => {
     localStorage.removeItem("cc_token");
     localStorage.removeItem("cc_user");
@@ -51,7 +59,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, updateName, logout }}>
       {children}
     </AuthContext.Provider>
   );

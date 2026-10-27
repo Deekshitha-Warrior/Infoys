@@ -137,6 +137,13 @@ def test_auth_profile_prediction_history_and_isolation(client):
     assert response.status_code == 200, response.text
     result = response.json()
     assert len(result["recommendations"]) == 5
+    assert len(result["skill_careers"]) == 30
+    assert len({r["career"] for r in result["skill_careers"]}) == len(
+        result["skill_careers"]
+    )
+    assert {"Database Administrator", "UX Designer", "Cloud Engineer"}.issubset({
+        r["career"] for r in result["skill_careers"]
+    })
     assert len({r["career"] for r in result["recommendations"]}) == 5
     assert all(
         0 <= r["confidence"] <= 100 and 0 <= r["alignment"] <= 100
@@ -191,6 +198,15 @@ def test_profile_validation_and_login(client):
         ).status_code
         == 200
     )
+
+
+def test_account_name_can_be_updated(client):
+    headers = account(client)
+    response = client.put("/api/auth/me", headers=headers, json={"name": "New Name"})
+    assert response.status_code == 200, response.text
+    assert response.json()["name"] == "New Name"
+    assert client.get("/api/profile/me", headers=headers).json()["name"] == "New Name"
+    assert client.put("/api/auth/me", headers=headers, json={"name": " "}).status_code == 422
 
 
 def test_resume_upload_review_analysis_and_ownership(client):

@@ -726,6 +726,30 @@
   color: #4f5e80;
   font-weight: 550;
 }
+.standard-workspace .settings-name-value,
+.standard-workspace .settings-name-form {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.standard-workspace .settings-name-form input {
+  min-width: 180px;
+  max-width: 100%;
+  border: 1px solid #e2e5f3;
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: #4f5e80;
+}
+.standard-workspace .settings-name-form .primary,
+.standard-workspace .settings-name-form .secondary,
+.standard-workspace .settings-name-value .secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+}
 .standard-workspace .help-step h3 {
   font-size: 15px;
   color: #4f5b7b;

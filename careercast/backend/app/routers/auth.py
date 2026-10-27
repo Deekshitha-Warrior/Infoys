@@ -4,8 +4,13 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models import User
-from ..schemas import UserRegister, UserLogin, TokenResponse
-from ..auth import hash_password, verify_password, create_access_token
+from ..schemas import UserRegister, UserLogin, TokenResponse, UserNameUpdate
+from ..auth import (
+    get_current_user,
+    hash_password,
+    verify_password,
+    create_access_token,
+)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -53,3 +58,15 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
         name=user.name,
         email=user.email,
     )
+
+
+@router.put("/me")
+def update_my_name(
+    payload: UserNameUpdate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    user.name = payload.name
+    db.commit()
+    db.refresh(user)
+    return {"user_id": user.user_id, "name": user.name, "email": user.email}

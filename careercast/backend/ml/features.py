@@ -32,7 +32,12 @@ class SkillFeatures(BaseEstimator, TransformerMixin):
             table = json.loads(
                 (ARTIFACTS / "skill_embeddings.json").read_text(encoding="utf-8")
             )["vectors"]
-            self.embedding_matrix_ = np.array([table[s] for s in self.skill_names_])
+            # Newly added checklist skills may not have trained embedding vectors.
+            # Keep them in multi-hot features; do not invent semantic embeddings.
+            dimension = len(next(iter(table.values())))
+            self.embedding_matrix_ = np.array(
+                [table.get(skill, [0.0] * dimension) for skill in self.skill_names_]
+            )
         return self
 
     @property

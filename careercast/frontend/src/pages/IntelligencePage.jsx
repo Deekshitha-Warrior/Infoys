@@ -15,6 +15,9 @@ import {
   GraduationCap,
   FileText,
   CircleAlert,
+  Edit3,
+  Save,
+  X,
 } from "lucide-react";
 import DashboardLayout from "../components/DashboardLayout";
 import { useAuth } from "../context/AuthContext";
@@ -116,7 +119,7 @@ function CardTitle({ title, to, label = "View all" }) {
 export default function IntelligencePage() {
   const { pathname } = useLocation(),
     [params] = useSearchParams(),
-    { user } = useAuth();
+    { user, updateName } = useAuth();
   const [profile, setProfile] = useState(null),
     [report, setReport] = useState(null),
     [models, setModels] = useState(null),
@@ -125,7 +128,10 @@ export default function IntelligencePage() {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [selected, setSelected] = useState(params.get("career") || ""),
-    [progress, setProgress] = useState({});
+    [progress, setProgress] = useState({}),
+    [nameDraft, setNameDraft] = useState(user?.name || ""),
+    [editingName, setEditingName] = useState(false),
+    [savingName, setSavingName] = useState(false);
   const title = titles[pathname] || "Overview";
   useEffect(() => {
     if (params.get("career")) setSelected(params.get("career"));
@@ -176,7 +182,12 @@ export default function IntelligencePage() {
     }
   }, [user?.user_id]);
   const careers = report?.recommendations || [],
-    target = careers.find((c) => c.career === selected) || careers[0],
+    skillCareers = report?.skill_careers || careers,
+    careerOptions = ["/skills", "/learning"].includes(pathname)
+      ? skillCareers
+      : careers,
+    target =
+      careerOptions.find((c) => c.career === selected) || careerOptions[0],
     skills = profile?.technical_skills || [];
   const completion = profile
     ? Math.round(
@@ -199,6 +210,25 @@ export default function IntelligencePage() {
       );
     } finally {
       setBusy(false);
+    }
+  }
+  async function saveName(e) {
+    e.preventDefault();
+    const name = nameDraft.trim();
+    if (!name) {
+      setError("Name cannot be empty.");
+      return;
+    }
+    setSavingName(true);
+    setError("");
+    try {
+      await updateName(name);
+      setNameDraft(name);
+      setEditingName(false);
+    } catch (e) {
+      setError(e.response?.data?.detail || "Could not update your name.");
+    } finally {
+      setSavingName(false);
     }
   }
   async function exportReport() {
@@ -248,7 +278,7 @@ export default function IntelligencePage() {
         value={target?.career || ""}
         onChange={(e) => setSelected(e.target.value)}
       >
-        {careers.map((c) => (
+        {careerOptions.map((c) => (
           <option key={c.career}>{c.career}</option>
         ))}
       </select>
@@ -420,7 +450,7 @@ export default function IntelligencePage() {
             </>
           )}
           {pathname === "/skills" &&
-            (careers.length ? (
+            (careerOptions.length ? (
               <>
                 {careerSelect}
                 <div className="dashboard-columns">
@@ -595,7 +625,53 @@ export default function IntelligencePage() {
               </p>
               <div className="settings-row">
                 <span>Name</span>
-                <strong>{user?.name}</strong>
+                {editingName ? (
+                  <form className="settings-name-form" onSubmit={saveName}>
+                    <input
+                      aria-label="Name"
+                      autoFocus
+                      maxLength={255}
+                      onChange={(e) => setNameDraft(e.target.value)}
+                      value={nameDraft}
+                    />
+                    <button
+                      className="primary"
+                      disabled={savingName}
+                      type="submit"
+                    >
+                      <Save size={16} />
+                      {savingName ? "Saving…" : "Save"}
+                    </button>
+                    <button
+                      className="secondary"
+                      disabled={savingName}
+                      onClick={() => {
+                        setNameDraft(user?.name || "");
+                        setEditingName(false);
+                        setError("");
+                      }}
+                      type="button"
+                    >
+                      <X size={16} />
+                      Cancel
+                    </button>
+                  </form>
+                ) : (
+                  <div className="settings-name-value">
+                    <strong>{user?.name}</strong>
+                    <button
+                      className="secondary"
+                      onClick={() => {
+                        setNameDraft(user?.name || "");
+                        setEditingName(true);
+                      }}
+                      type="button"
+                    >
+                      <Edit3 size={16} />
+                      Edit name
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="settings-row">
                 <span>Email</span>

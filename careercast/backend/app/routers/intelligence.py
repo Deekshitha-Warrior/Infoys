@@ -88,6 +88,7 @@ def history(user: User = Depends(get_current_user), db: Session = Depends(get_db
     current_hash = profile_hash(_profile_to_out(profile, user)) if profile else None
     version = model_report().get("version")
     reports = []
+    latest_current_processed = False
     for row in (
         db.query(Prediction)
         .filter_by(user_id=user.user_id)
@@ -95,13 +96,30 @@ def history(user: User = Depends(get_current_user), db: Session = Depends(get_db
         .limit(20)
     ):
         report = json.loads(row.result)
+        is_current = (
+            report.get("profile_hash") == current_hash
+            and report.get("model_version") == version
+        )
+        enrich_current_report = is_current and not latest_current_processed
+        if is_current and not latest_current_processed:
+            latest_current_processed = True
+        if (
+            enrich_current_report
+            and "skill_careers" not in report
+            and profile
+        ):
+            try:
+                report["skill_careers"] = predict(
+                    _profile_to_out(profile, user)
+                )["skill_careers"]
+            except ValueError as exc:
+                raise HTTPException(422, str(exc)) from exc
         reports.append(
             {
                 "id": row.prediction_id,
                 "created_at": row.created_at,
                 "report": report,
-                "is_current": report.get("profile_hash") == current_hash
-                and report.get("model_version") == version,
+                "is_current": is_current,
             }
         )
     return reports
