@@ -189,3 +189,19 @@ excluded from Git and the source archive.
   https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 
 No source organization endorses CareerCast or its recommendations.
+
+## Deploy the frontend on Vercel
+
+Set Root Directory to `careercast/frontend`, Framework Preset to **Vite**,
+Install Command to `npm ci`, Build Command to `npm run build`, and Output
+Directory to `dist`. Redeploy after changing these settings. The included
+frontend `vercel.json` handles React Router deep links such as `/login`.
+The repository-root `vercel.json` also supports leaving Root Directory at the
+repository root. Production HTML should reference `/assets/`, not `/src/main.jsx`.
+
+Set `VITE_API_URL` to your deployed FastAPI backend's public HTTPS address before
+building. The default `http://localhost:8000` only works on your computer.
+Deploying this frontend does not start the Python backend. The current backend
+CORS list allows local origins only; include `https://careercast.vercel.app`
+when deploying the backend. Use a private `SECRET_KEY`, a persistent database,
+and persistent storage for uploaded resumes on that backend.
