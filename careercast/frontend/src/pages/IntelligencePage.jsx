@@ -23,6 +23,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import { useAuth } from "../context/AuthContext";
 import api from "../api";
 import ReferenceDashboard from "../components/ReferenceDashboard";
+import LearningLibrary from "../components/LearningLibrary";
 const titles = {
   "/dashboard": "Overview",
   "/careers": "Career Intelligence",
@@ -616,6 +617,7 @@ export default function IntelligencePage() {
             ) : (
               <Empty />
             ))}
+          {pathname === "/learning" && <LearningLibrary />}
           {pathname === "/models" && <ModelEvaluation models={models} />}
           {pathname === "/settings" && (
             <section className="panel settings-panel">

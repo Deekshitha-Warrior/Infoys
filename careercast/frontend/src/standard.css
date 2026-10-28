@@ -2598,3 +2598,21 @@
 .standard-workspace .side-link[aria-current="page"] > svg {
   color: #fff;
 }
+
+/* Google learning library: available even before profile analysis. */
+.learning-library { margin-top: 24px; }
+.learning-library-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.learning-library-heading h2 { margin: 8px 0; }
+.learning-library-switch { display: flex; gap: 6px; flex-wrap: wrap; padding: 5px; background: #f2effb; border-radius: 14px; }
+.learning-library-switch button { display: inline-flex; gap: 8px; align-items: center; border: 0; padding: 11px 14px; border-radius: 10px; color: #554681; background: transparent; cursor: pointer; font: inherit; font-size: 13px; }
+.learning-library-switch button[aria-pressed="true"] { background: #fff; color: #5735bd; box-shadow: 0 2px 10px #38236b12; }
+.learning-library-switch button:focus-visible, .learning-library-card a:focus-visible { outline: 3px solid #8e79df; outline-offset: 3px; }
+.learning-library-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.learning-library-card { display: flex; flex-direction: column; padding: 22px; border: 1px solid #e8e5f4; border-radius: 18px; background: linear-gradient(145deg, #fff, #faf9ff); }
+.learning-library-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.learning-library-meta small { color: #817a9d; }
+.learning-library-card h3 { margin: 18px 0 8px; font-size: 16px; }
+.learning-library-card p { font-size: 13px; line-height: 1.65; margin: 0 0 20px; }
+.learning-library-card a { display: inline-flex; gap: 8px; align-items: center; color: #6544c3; font-weight: 600; font-size: 13px; margin-top: auto; text-decoration: none; }
+@media (max-width: 1100px) { .learning-library-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .learning-library-cards { grid-template-columns: 1fr; } .learning-library-switch { width: 100%; } .learning-library-switch button { flex: 1; justify-content: center; } }
