@@ -24,6 +24,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../api";
 import ReferenceDashboard from "../components/ReferenceDashboard";
 import LearningLibrary from "../components/LearningLibrary";
+import SkillGapPlan from "../components/SkillGapPlan";
 const titles = {
   "/dashboard": "Overview",
   "/careers": "Career Intelligence",
@@ -345,6 +346,7 @@ export default function IntelligencePage() {
               profile={profile}
               report={report}
               analysis={analysis}
+              models={models}
               completion={completion}
               progress={progress}
               onGenerate={generate}
@@ -402,6 +404,9 @@ export default function IntelligencePage() {
                       <span className="green-pill">EXPLORE THIS DIRECTION</span>
                       <h2>{target?.career}</h2>
                       <Ring value={target?.alignment} />
+                      <p className="data-note">{target?.matched_skills.length} matched / {(target?.matched_skills.length || 0) + (target?.missing_skills.length || 0)} required × 100 = {target?.alignment}% skill match</p>
+                      <p><strong>Career match index: {target?.ranking_score}/100</strong></p>
+                      <p className="data-note">80% model probability + 20% skill alignment. A ranking index, not a hiring probability.</p>
                       <div className="target-metrics">
                         <div>
                           <strong>{target?.confidence}%</strong>
@@ -617,6 +622,7 @@ export default function IntelligencePage() {
             ) : (
               <Empty />
             ))}
+          {["/skills", "/learning"].includes(pathname) && target && <SkillGapPlan key={`${target.career}:${report?.profile_hash}`} career={target.career} profileKey={report?.profile_hash} />}
           {pathname === "/learning" && <LearningLibrary />}
           {pathname === "/models" && <ModelEvaluation models={models} />}
           {pathname === "/settings" && (

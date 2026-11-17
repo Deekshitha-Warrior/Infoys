@@ -1,0 +1,49 @@
+name: CareerCast quality
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -r requirements-dev.txt
+        working-directory: careercast/backend
+      - run: python -m pytest -q
+        working-directory: careercast/backend
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
+      - run: npm ci && node --test src/lib/scoreMath.test.js && npm run build
+        working-directory: careercast/frontend
+  model-quality-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -r requirements.txt
+        working-directory: careercast/backend
+      - name: Recompute holdout metrics and enforce macro F1 of 78 percent without regression
+        run: python -m ml.quality_gate
+        working-directory: careercast/backend
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: model-quality-evidence
+          path: careercast/artifacts/quality_gate.json
+          if-no-files-found: warn

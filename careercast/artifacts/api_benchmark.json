@@ -1,0 +1,29 @@
+{
+  "requests": 120,
+  "concurrency": 5,
+  "errors": 0,
+  "endpoints": {
+    "/api/intelligence/gap-report": {
+      "requests": 40,
+      "p50_ms": 67.86,
+      "p95_ms": 102.4
+    },
+    "/api/intelligence/recommend": {
+      "requests": 40,
+      "p50_ms": 118.96,
+      "p95_ms": 185.66
+    },
+    "/api/intelligence/predict": {
+      "requests": 40,
+      "p50_ms": 150.68,
+      "p95_ms": 222.11
+    }
+  },
+  "target_p95_ms": 300,
+  "passed": true,
+  "scope": "Warm-model local HTTP prediction, recommendation and gap queries including authentication, database reads and prediction-history writes. Excludes cold starts and hosted-network guarantees.",
+  "report_generated_at_utc": "2026-11-17T06:49:07.985475+00:00",
+  "python_version": "3.14.6",
+  "platform": "Windows",
+  "profile_scope": "Dedicated synthetic account in an isolated temporary SQLite database."
+}

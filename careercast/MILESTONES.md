@@ -100,3 +100,10 @@ labeled profiles and a new untouched external validation cohort.
 Reproduce from backend with `python -m ml.tune_logistic`. Full parameters and
 metrics: `artifacts/logistic_accuracy_experiment.json`. This command never
 replaces the deployed bundle.
+
+## Milestone 3 extension
+
+See [Milestone 3 implementation, setup and acceptance](MILESTONE3.md) for
+the gap-report APIs, practice plans, MLflow registry, Streamlit review UI and
+CI quality gate. The local HTTP load test passed; the 78% model macro F1 and
+real pilot relevance acceptance criteria remain unmet/unverified.

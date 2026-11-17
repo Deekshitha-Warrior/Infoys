@@ -13,3 +13,7 @@ careercast/backend/uploads/*
 *.egg-info/
 careercast/artifacts/sentence_encoder/
 careercast/artifacts/encoder-*.zip
+
+mlruns/
+mlartifacts/
+.streamlit/secrets.toml

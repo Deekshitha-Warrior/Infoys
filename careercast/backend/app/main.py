@@ -1,9 +1,10 @@
 """FastAPI application entry point."""
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import engine, Base
-from .routers import auth, profile, resume, intelligence
+from .routers import auth, profile, resume, intelligence, recommendations
 
 # Create all DB tables on startup
 Base.metadata.create_all(bind=engine)
@@ -23,7 +24,7 @@ app.add_middleware(
         "http://localhost:5174",
         "http://127.0.0.1:5174",
         "http://localhost:3000",
-    ],
+    ] + [origin.strip() for origin in os.getenv("CORS_ORIGINS", "").split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,6 +35,7 @@ app.include_router(auth.router)
 app.include_router(profile.router)
 app.include_router(resume.router)
 app.include_router(intelligence.router)
+app.include_router(recommendations.router)
 
 
 @app.get("/")

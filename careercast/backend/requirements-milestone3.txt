@@ -1,0 +1,5 @@
+-r requirements.txt
+mlflow==3.18.0
+streamlit==1.67.0
+plotly>=6,<7
+requests>=2.32,<3

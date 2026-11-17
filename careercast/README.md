@@ -47,6 +47,20 @@ shared deployment; the source includes a development fallback key.
 Implementation: `backend/app/auth.py`, `backend/app/routers/auth.py`,
 `frontend/src/context/AuthContext.jsx`, and `frontend/src/api.js`.
 
+## Dashboard score explanations
+
+The dashboard now shows career match indices, individual model probabilities,
+skill match/gap ratios, learning-task completion, roadmap coverage, profile and
+resume completeness, and model validation results, with formulas.
+See [score definitions and PDF traceability](SCORING.md).
+
+## Milestone 3
+
+Skill-gap practice plans, authenticated recommendation/gap APIs, CSV exports,
+pilot feedback, MLflow registration, a GitHub Actions model gate, and a Streamlit
+review prototype are added. See [setup and acceptance status](MILESTONE3.md).
+The 78% macro F1 and pilot relevance targets are not claimed as achieved.
+
 ## Milestone status
 
 Milestone 1 and 2 **implementation workflows are present**, but the PDF's complete

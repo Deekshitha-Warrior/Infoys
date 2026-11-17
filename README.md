@@ -21,3 +21,7 @@ to the signed-in user through SQLAlchemy (SQLite by default).
 
 See the [authentication details](careercast/README.md#authentication) for the
 login flow, token storage, logout behavior, and current limitations.
+
+Milestone 3 adds competency practice plans, gap-report APIs and CSV export,
+MLflow model registration, CI quality gates, and a Streamlit review prototype.
+Read [Milestone 3 setup and acceptance](careercast/MILESTONE3.md).

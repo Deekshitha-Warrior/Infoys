@@ -2616,3 +2616,28 @@
 .learning-library-card a { display: inline-flex; gap: 8px; align-items: center; color: #6544c3; font-weight: 600; font-size: 13px; margin-top: auto; text-decoration: none; }
 @media (max-width: 1100px) { .learning-library-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .learning-library-cards { grid-template-columns: 1fr; } .learning-library-switch { width: 100%; } .learning-library-switch button { flex: 1; justify-content: center; } }
+
+.competency-plan { margin-top: 24px; }
+.gap-rating { display: grid; gap: 8px; margin-top: 20px; font-size: 12px; color: #645d7c; }
+.gap-rating select { width: 100%; padding: 10px; border: 1px solid #ddd6ee; border-radius: 10px; background: white; color: #332754; }
+
+.dashboard-scoreboard { margin: 20px 0; }
+.dashboard-scoreboard .standard-card-heading h2 { display: flex; align-items: center; gap: 10px; font-size: 18px; }
+.score-math-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 20px; }
+.score-math-card { padding: 20px; background: linear-gradient(145deg, #faf9ff, #fff); border: 1px solid #e6e1f3; border-radius: 16px; min-width: 0; }
+.score-math-card h3 { font-size: 13px; color: #5f557c; margin: 0 0 12px; }
+.score-math-card > strong { font-size: 30px; color: #5839a6; }
+.score-math-card > strong small { font-size: 15px; margin-left: 3px; }
+.score-math-card p { font-size: 12px; line-height: 1.65; color: #726b86; }
+.score-math-card code, .score-model-breakdown code { display: block; font-size: 11px; line-height: 1.8; background: #f1edf9; padding: 10px; border-radius: 9px; color: #574482; overflow-wrap: anywhere; white-space: normal; }
+.score-model-breakdown { margin-top: 24px; padding-top: 20px; border-top: 1px solid #eee9f6; }
+.score-model-breakdown h3 { font-size: 14px; }
+.score-model-breakdown > div { display: flex; gap: 14px; flex-wrap: wrap; }
+.score-model-breakdown > div > span { flex: 1; min-width: 105px; background: #f7f5fc; padding: 14px; border-radius: 12px; display: grid; gap: 8px; }
+.score-model-breakdown small { text-transform: capitalize; color: #716580; font-size: 12px; }
+.score-model-breakdown strong { font-size: 20px; color: #5331a8; }
+.score-model-breakdown summary { cursor: pointer; margin: 18px 0 10px; color: #655084; font-size: 13px; }
+.score-model-breakdown code { margin: 7px 0; }
+.career-gallery-card .gallery-score-details { font-size: 10px; line-height: 1.7; min-height: 0; margin: 10px 0; }
+@media (max-width: 1000px) { .score-math-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .score-math-grid { grid-template-columns: 1fr; } .dashboard-scoreboard .standard-card-heading { align-items: flex-start; flex-wrap: wrap; gap: 10px; } }

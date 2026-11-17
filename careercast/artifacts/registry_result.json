@@ -1,0 +1,34 @@
+{
+  "run_id": "f67888dd0c2f4f2d9398b93619b40dbc",
+  "registered": [
+    {
+      "name": "CareerCast-logistic_regression",
+      "version": 1
+    },
+    {
+      "name": "CareerCast-random_forest",
+      "version": 1
+    },
+    {
+      "name": "CareerCast-xgboost",
+      "version": 1
+    }
+  ],
+  "promoted": false,
+  "quality_gate": {
+    "version": "career-survey-semantic-v2",
+    "test_rows": 90,
+    "ensemble": {
+      "accuracy": 0.5333,
+      "precision_macro": 0.3761,
+      "recall_macro": 0.3735,
+      "f1_macro": 0.3697,
+      "top5_recall": 0.9
+    },
+    "minimum_macro_f1": 0.78,
+    "baseline_macro_f1": 0.3697,
+    "threshold_pass": false,
+    "regression_pass": true,
+    "scope": "Frozen survey test contract. Previously evaluated holdout; no claim of external benchmark validation."
+  }
+}

@@ -1,0 +1,11 @@
+**/node_modules
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/*.db
+**/.env*
+backend/uploads/*
+artifacts/sentence_encoder
+frontend
+mlruns
+mlartifacts

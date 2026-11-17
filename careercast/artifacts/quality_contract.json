@@ -1,0 +1,7 @@
+{
+  "minimum_macro_f1": 0.78,
+  "baseline_macro_f1": 0.3697,
+  "dataset_sha256": "374acc002e61a4e958d2e33d308eb28d9bc80cc234538cb75250c29878aa7965",
+  "split_sha256": "3d7a97b26bea8c02e04389bee764ee5cd2b322bb44968b401f49aea7f45af313",
+  "description": "Frozen survey test contract. Previously evaluated holdout; no claim of external benchmark validation."
+}

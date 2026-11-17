@@ -1,6 +1,6 @@
 """SQLAlchemy ORM models."""
 from sqlalchemy import (
-    Column, Integer, String, Text, DateTime, ForeignKey, func
+    Column, Integer, String, Text, DateTime, ForeignKey, UniqueConstraint, func
 )
 from sqlalchemy.orm import relationship
 from .database import Base
@@ -57,4 +57,15 @@ class Prediction(Base):
     prediction_id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False, index=True)
     result = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class GapFeedback(Base):
+    __tablename__ = "gap_feedback"
+    __table_args__ = (UniqueConstraint("user_id", "career", "profile_hash", name="uq_gap_feedback_profile"),)
+    feedback_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False, index=True)
+    career = Column(String(100), nullable=False)
+    profile_hash = Column(String(64), nullable=False)
+    ratings = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

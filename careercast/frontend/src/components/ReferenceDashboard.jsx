@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import ScoreOverview from "./ScoreOverview";
+import { roadmapScores } from "../lib/scoreMath";
 import {
   Target,
   BookOpen,
@@ -36,6 +38,7 @@ export default function ReferenceDashboard({
   profile,
   report,
   analysis,
+  models,
   completion,
   progress,
   onGenerate,
@@ -45,15 +48,7 @@ export default function ReferenceDashboard({
   const careers = report?.recommendations || [],
     top = careers[0];
   const skills = profile?.technical_skills || [];
-  const plan = top ? [...top.matched_skills, ...top.missing_skills] : [];
-  const completed = top
-    ? plan.filter(
-        (s) => top.matched_skills.includes(s) || progress[`${top.career}:${s}`],
-      ).length
-    : 0;
-  const learning = plan.length
-    ? Math.round((completed / plan.length) * 100)
-    : 0;
+  const learning = roadmapScores(top, progress).coverage;
   const tiles = [
     [
       Target,
@@ -96,7 +91,7 @@ export default function ReferenceDashboard({
               {[
                 [Layers3, "Your skills", skills.length, "/profile"],
                 [Target, "Career matches", careers.length, "/careers"],
-                [BookOpen, "Learning progress", `${learning}%`, "/learning"],
+                [BookOpen, "Roadmap coverage", learning === null ? "—" : `${learning}%`, "/learning"],
               ].map(([Icon, label, value, to]) => (
                 <Link key={label} to={to}>
                   <span className="hero-stat-icon">
@@ -143,6 +138,7 @@ export default function ReferenceDashboard({
           </Link>
         </aside>
       </div>
+      <ScoreOverview profile={profile} report={report} analysis={analysis} models={models} progress={progress} />
       <div className="reference-feature-grid">
         {tiles.map(([Icon, title, description, to]) => (
           <Link to={to} className="standard-card feature-tile" key={title}>
@@ -191,10 +187,11 @@ export default function ReferenceDashboard({
                       Explore the strengths you bring and what to learn next.
                     </p>
                     <div className="gallery-match">
-                      <span>{career.alignment}%</span>
-                      <small>Skill alignment</small>
+                      <span>{career.ranking_score}</span>
+                      <small>Match index /100</small>
                       <ArrowUpRight size={14} />
                     </div>
+                    <p className="gallery-score-details">Skill match {career.alignment}% · Model confidence {career.confidence}%</p>
                     <div className="gallery-tags">
                       {career.matched_skills.slice(0, 2).map((s) => (
                         <span key={s}>{s}</span>
@@ -268,16 +265,16 @@ export default function ReferenceDashboard({
             <div className="reference-bars">
               {[
                 ["Profile complete", completion],
-                ["Learning roadmap", learning],
-                ["Résumé completeness", analysis?.score || 0],
+                ["Roadmap coverage", learning],
+                ["Résumé completeness", analysis?.score ?? null],
               ].map(([label, value]) => (
                 <div key={label}>
                   <span>
                     {label}
-                    <b>{value}%</b>
+                    <b>{value === null ? "Not available" : `${value ?? 0}%`}</b>
                   </span>
                   <div className="metric-track">
-                    <i style={{ width: `${value}%` }} />
+                    <i style={{ width: `${value ?? 0}%` }} />
                   </div>
                 </div>
               ))}

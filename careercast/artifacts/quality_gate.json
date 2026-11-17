@@ -1,0 +1,16 @@
+{
+  "version": "career-survey-semantic-v2",
+  "test_rows": 90,
+  "ensemble": {
+    "accuracy": 0.5333,
+    "precision_macro": 0.3761,
+    "recall_macro": 0.3735,
+    "f1_macro": 0.3697,
+    "top5_recall": 0.9
+  },
+  "minimum_macro_f1": 0.78,
+  "baseline_macro_f1": 0.3697,
+  "threshold_pass": false,
+  "regression_pass": true,
+  "scope": "Frozen survey test contract. Previously evaluated holdout; no claim of external benchmark validation."
+}
