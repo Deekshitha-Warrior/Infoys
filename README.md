@@ -3,10 +3,100 @@
 CareerCast is the AI-powered career exploration application in
 [`careercast/`](careercast/). Start with the [project guide](careercast/README.md).
 
-The UI has been rebuilt around the supplied navy/lavender references, and
-milestone 1 and 2 training, parsing, prediction, ranking, and evaluation workflows
-have been added. **Not every benchmark acceptance target is met.** See
-[the milestone report](careercast/MILESTONES.md) for measured results and limits.
+## Progress through Milestones 1, 2 and 3
+
+The implementation below is delivered. **Feature completion and benchmark
+acceptance are different:** several model/data targets are still unmet.
+
+### Milestone 1 - Profile ingestion, resume parsing and baseline prediction
+
+- Built validated profile forms for education, technical/soft skills,
+  certifications, and work experience.
+- Added account registration/login, protected pages, and account-scoped data.
+- Implemented PDF/DOCX resume upload and spaCy NER with skill/role/education
+  rules, alias normalization, extraction review, and confirmed profile import.
+- Added eight structural resume completeness checks and improvement suggestions.
+- Trained Logistic Regression with cross-validated parameter tuning; saved the
+  trained model and connected it to career prediction.
+- Added prediction reports, vocabulary coverage, and persisted prediction history.
+
+**Results:** 359 anonymized public survey profiles, 269 training profiles and
+90 held-out profiles across 10 career categories. Logistic Regression accuracy
+is **55.56%**, below the required 65%. An additional 48-configuration tuning
+experiment scored 52.22% on the same holdout, so it did not replace the better
+baseline. Parser precision on 200 independently annotated resumes is unverified.
+
+### Milestone 2 - Advanced ML, semantic features and recommendations
+
+- Added Random Forest and XGBoost with cross-validated hyperparameter tuning.
+- Combined TF-IDF, canonical multi-hot skills, and fine-tuned Sentence-BERT skill
+  embeddings. Fine-tuning used 480 pairs from 240 O*NET occupation descriptions.
+- Implemented Top-K ranking using 80% mean classifier probability and 20% curated
+  skill alignment, with individual model scores, matching and missing skills.
+- Added Career Intelligence, Skill Analysis, a learning roadmap with device-local
+  progress, and 10 Google courses plus 10 certificate/certification pathways.
+- Added separate personalized Career Intelligence and Skill Analysis PDF reports,
+  model evaluation, and stale-profile/model detection for saved reports.
+- Standardized dashboard, authentication pages, and workspace UI in navy/violet.
+
+| Model or ranking | Accuracy | Macro F1 | Top-5 recall |
+|---|---:|---:|---:|
+| Logistic Regression | 55.56% | 43.25% | 88.89% |
+| Random Forest | 37.78% | 28.44% | 86.67% |
+| XGBoost | 48.89% | 30.20% | 88.89% |
+| Mean ensemble | 53.33% | 36.97% | 90.00% |
+| Final career ranking | 53.33% | 37.53% | 90.00% |
+
+**Acceptance:** Top-5 recall reaches 90% on this survey split. Ensemble macro F1
+remains below the 80% Milestone 2 target. Mean synonym cosine similarity is
+71.68%, below 85%. No SemEval or curated LinkedIn transition validation was
+performed; the collected survey is not presented as either benchmark.
+
+### Milestone 3 - Skill gaps, APIs, registry, CI and review UI
+
+- Added authenticated read-only recommendations, supported-career queries,
+  detailed skill-gap reports, and CSV downloads alongside the prediction API.
+- Added actionable practice activities, portfolio evidence suggestions, and
+  resource links to Skill Analysis and Learning Path.
+- Added optional per-skill relevance feedback with account isolation and
+  stale-profile checks, plus an aggregate pilot-report command.
+- Configured MLflow experiment tracking and versioned registration of all three
+  classifiers. Registered models were reloaded and their probability outputs
+  matched the original models. No failing model was promoted.
+- Added GitHub Actions for API tests, frontend scoring tests/build, and an
+  independently recomputed macro F1 gate of at least 78%, with regression checks.
+- Built a Streamlit review prototype using authenticated FastAPI requests,
+  Plotly career probability charts, and JSON/CSV/PDF downloads.
+- Added a Docker deployment recipe and configurable backend CORS origins.
+- Added dashboard match indices, confidence, skill match/gap, learning progress,
+  roadmap coverage, profile/resume completeness, vocabulary coverage, and model
+  validation metrics, with visible formulas and honest unavailable states.
+
+**Verification:** 11 backend tests and 3 JavaScript scoring tests passed; the
+production frontend build passed. Streamlit login, charts, plans and exports
+were checked against an isolated test API. A local HTTP test of 120 requests
+at concurrency 5 had zero errors, with p95 latencies of **222.11 ms prediction,
+185.66 ms recommendation, and 102.40 ms gap report**. These pass 300 ms locally
+with a warm model, not a public-host performance guarantee.
+
+**Remaining acceptance:** the 78% CI macro F1 gate correctly fails at the current
+36.97%. GitHub administrators must require the status check to enforce merge
+blocking. Real pilot skill-gap relevance of at least 78% is unverified. No
+public backend was provisioned; the Docker recipe was not built here because
+Docker CLI was unavailable. Frontend deployment alone does not host the API.
+
+### Score interpretation and data limits
+
+Career match indices are ranking heuristics; model probabilities are
+uncalibrated and do not measure hiring success. Checklist matches and
+self-reported learning progress are not assessed proficiency. Confidence
+intervals, live market-demand scores, and trained experience-recency weighting
+are not available and are not replaced with invented percentages. The test
+split has been evaluated previously; it is not fresh external validation.
+
+Further details: [Milestones 1-2 evidence](careercast/MILESTONES.md),
+[Milestone 3 setup](careercast/MILESTONE3.md), and
+[dashboard formulas](careercast/SCORING.md).
 
 `careercast.zip` is the updated source distribution. It excludes personal
 resume uploads, local databases, dependencies, and large training checkpoints.
@@ -21,7 +111,3 @@ to the signed-in user through SQLAlchemy (SQLite by default).
 
 See the [authentication details](careercast/README.md#authentication) for the
 login flow, token storage, logout behavior, and current limitations.
-
-Milestone 3 adds competency practice plans, gap-report APIs and CSV export,
-MLflow model registration, CI quality gates, and a Streamlit review prototype.
-Read [Milestone 3 setup and acceptance](careercast/MILESTONE3.md).
