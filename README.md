@@ -3,7 +3,7 @@
 CareerCast is the AI-powered career exploration application in
 [`careercast/`](careercast/). Start with the [project guide](careercast/README.md).
 
-## Progress through Milestones 1, 2 and 3
+## Progress through Milestones 1, 2, 3 and 4
 
 The implementation below is delivered. **Feature completion and benchmark
 acceptance are different:** several model/data targets are still unmet.
@@ -85,6 +85,28 @@ blocking. Real pilot skill-gap relevance of at least 78% is unverified. No
 public backend was provisioned; the Docker recipe was not built here because
 Docker CLI was unavailable. Frontend deployment alone does not host the API.
 
+### Milestone 4 - Packaging, testing and finalization
+
+- Added a pip-installable Python library with bundled model assets and a public
+  API, plus CLI commands for validation, resume parsing, predictions, gaps,
+  PDF/CSV exports, batches, cohort summaries and the API/Streamlit servers.
+- Expanded integration/regression coverage to 16 backend tests, including
+  batch/single prediction parity, CLI output, cohort privacy and feedback.
+- Added Streamlit career comparisons, uploaded-cohort distribution/skill-gap
+  analytics, aggregate exports and optional recommendation-satisfaction ratings.
+- Published CLI documentation, generated OpenAPI/REST reference, release guide,
+  and enriched model/dataset cards with Hugging Face-style metadata.
+- Built and checked wheel/source distributions, verified installed-wheel inference
+  outside the source checkout, and added packaging/batch checks to GitHub Actions.
+
+**Measured result:** the 1,000-profile structured-input CLI batch completed in
+**53.853 seconds**, under four minutes on this Windows machine. The test covers
+validation, feature extraction, all models, ranking, gap analysis and JSON output;
+it does not benchmark parsing 1,000 resumes or deployed-host performance.
+**82% user satisfaction remains unverified** without real participants. Packages
+and cards are available in the source release; no PyPI/Hugging Face upload or
+public-backend deployment is claimed. See the Milestone 4 guide for setup.
+
 ### Score interpretation and data limits
 
 Career match indices are ranking heuristics; model probabilities are
@@ -111,3 +133,5 @@ to the signed-in user through SQLAlchemy (SQLite by default).
 
 See the [authentication details](careercast/README.md#authentication) for the
 login flow, token storage, logout behavior, and current limitations.
+
+[Milestone 4 installation, CLI and acceptance evidence](careercast/MILESTONE4.md).

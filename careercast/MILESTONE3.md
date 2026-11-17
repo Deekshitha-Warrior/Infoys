@@ -82,7 +82,7 @@ python -m ml.quality_gate
 ```
 
 The command reloads model weights and recomputes probabilities, rather than
-trusting edited metrics in evaluation.json. It checks hashes of the frozen
+trusting edited metrics in evaluation.json. It checks canonical JSON content hashes of the frozen
 feature dataset and split, plus the 0.78 minimum and recorded baseline. The
 current holdout is a previously evaluated survey sample, not a new external
 benchmark. Changes to the evaluation contract require review; do not change
@@ -164,3 +164,9 @@ The mentor-requested dashboard now displays match scores, the arithmetic for
 each profile/learning/resume measure, and separate model validation results.
 Three additional JavaScript tests verify learning-score arithmetic and missing
 data behavior. See SCORING.md for definitions and specification traceability.
+
+CI portability fix: the frozen-contract hashes now canonicalize JSON whitespace
+and key order, so CRLF/LF checkout differences do not look like data changes.
+JSON values and array order are still protected. CI explicitly installs the
+English spaCy model for the NER integration test; fallback behavior remains
+covered separately. The data, labels, split and F1 threshold are unchanged.

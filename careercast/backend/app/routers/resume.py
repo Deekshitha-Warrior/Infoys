@@ -16,8 +16,9 @@ from ..parser import extract_text, parse_resume
 
 router = APIRouter(prefix="/api/resume", tags=["resume"])
 
-UPLOAD_DIR = Path(__file__).parent.parent.parent / "uploads"
-UPLOAD_DIR.mkdir(exist_ok=True)
+from ..runtime import RUNTIME_DIR
+UPLOAD_DIR = RUNTIME_DIR / "uploads"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 ALLOWED_EXTENSIONS = {".pdf", ".docx"}

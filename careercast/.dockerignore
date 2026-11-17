@@ -9,3 +9,7 @@ artifacts/sentence_encoder
 frontend
 mlruns
 mlartifacts
+
+build
+dist
+*.egg-info

@@ -1,0 +1,10 @@
+{
+  "profiles": 1000,
+  "elapsed_seconds": 53.853,
+  "target_seconds": 240,
+  "passed": true,
+  "measured_at_utc": "2026-11-17T11:00:39.593848+00:00",
+  "python": "3.14.6",
+  "platform": "Windows",
+  "scope": "Cold-process local CLI: structured JSON read, schema validation, text/skill vectorization, three classifiers, career ranking, top-career gap plans and JSON write. Synthetic repeated profiles for throughput only; excludes document parsing, HTTP and public-host performance."
+}

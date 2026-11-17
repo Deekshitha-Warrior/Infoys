@@ -11,13 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.14'
       - run: python -m pip install -r requirements-dev.txt
+        working-directory: careercast/backend
+      - name: Install the English NER model required by parser integration tests
+        run: python -m spacy download en_core_web_sm
         working-directory: careercast/backend
       - run: python -m pytest -q
         working-directory: careercast/backend
@@ -30,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
@@ -46,4 +49,31 @@ jobs:
         with:
           name: model-quality-evidence
           path: careercast/artifacts/quality_gate.json
+          if-no-files-found: warn
+
+  package-and-batch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14'
+      - run: python -m pip install ".[dev]"
+        working-directory: careercast
+      - run: python -m build && python -m twine check dist/*
+        working-directory: careercast
+      - run: python scripts/check_wheel.py dist/careercast_intelligence-0.4.0-py3-none-any.whl
+        working-directory: careercast
+      - run: python -m ml.benchmark_batch
+        working-directory: careercast/backend
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: python-package-and-batch-evidence
+          path: |
+            careercast/dist/*
+            careercast/artifacts/batch_benchmark.json
           if-no-files-found: warn

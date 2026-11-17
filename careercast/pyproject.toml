@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "careercast-intelligence"
+version = "0.4.0"
+description = "Career exploration, skill gap analysis, REST API and CLI"
+readme = "README.md"
+requires-python = ">=3.14"
+dynamic = ["dependencies"]
+
+[project.scripts]
+careercast = "careercast_tools.cli:main"
+
+[project.urls]
+Repository = "https://github.com/Deekshitha-Warrior/Infoys"
+Documentation = "https://github.com/Deekshitha-Warrior/Infoys/tree/main/careercast/docs"
+
+[project.optional-dependencies]
+review = ["streamlit==1.67.0", "plotly>=6,<7", "requests>=2.32,<3"]
+registry = ["mlflow==3.18.0"]
+dev = ["pytest>=8,<10", "httpx>=0.27", "build>=1.2", "twine>=6"]
+
+[tool.setuptools]
+include-package-data = false
+packages = ["app", "app.routers", "ml", "careercast_tools", "careercast_assets"]
+
+[tool.setuptools.package-dir]
+app = "backend/app"
+ml = "backend/ml"
+careercast_tools = "backend/careercast_tools"
+careercast_assets = "."
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["backend/requirements.txt"]}
+
+[tool.setuptools.package-data]
+careercast_assets = ["artifacts/*.joblib", "artifacts/*.json", "artifacts/*.md", "artifacts/LICENSE-*.txt", "data/*.json", "data/*.md", "docs/*.md", "docs/*.json", "SCORING.md", "MILESTONE3.md", "MILESTONE4.md"]

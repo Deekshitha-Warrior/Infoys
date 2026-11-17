@@ -9,7 +9,7 @@ from ..auth import get_current_user
 from ..database import get_db
 from ..models import User, Profile, GapFeedback
 from ..gaps import gap_report, gap_csv
-from ..intelligence import predict, CAREERS
+from ..intelligence import predict, CAREERS, profile_hash
 from .profile import _profile_to_out
 
 router = APIRouter(prefix="/api/intelligence", tags=["recommendations and skill gaps"])
@@ -30,7 +30,10 @@ def careers(user: User = Depends(get_current_user)):
 @router.get("/recommend")
 def recommendations(k: int = Query(5, ge=1, le=10), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        return predict(current_profile(user, db), k)
+        profile = current_profile(user, db)
+        result = predict(profile, k)
+        result["profile_hash"] = profile_hash(profile)
+        return result
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
 

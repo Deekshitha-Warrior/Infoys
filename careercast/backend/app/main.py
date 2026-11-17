@@ -4,14 +4,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import engine, Base
-from .routers import auth, profile, resume, intelligence, recommendations
+from .routers import auth, profile, resume, intelligence, recommendations, analytics
 
 # Create all DB tables on startup
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="CareerCast API",
-    version="2.0.0",
+    version="0.4.0",
     description="Career profiles, spaCy resume parsing, trained career prediction and Top-K recommendations",
 )
 
@@ -36,11 +36,12 @@ app.include_router(profile.router)
 app.include_router(resume.router)
 app.include_router(intelligence.router)
 app.include_router(recommendations.router)
+app.include_router(analytics.router)
 
 
 @app.get("/")
 def root():
-    return {"message": "CareerCast API is running", "version": "2.0.0"}
+    return {"message": "CareerCast API is running", "version": "0.4.0"}
 
 
 @app.get("/health")

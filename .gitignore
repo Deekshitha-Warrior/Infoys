@@ -17,3 +17,5 @@ careercast/artifacts/encoder-*.zip
 mlruns/
 mlartifacts/
 .streamlit/secrets.toml
+
+build/

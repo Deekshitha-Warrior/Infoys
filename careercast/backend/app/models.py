@@ -69,3 +69,13 @@ class GapFeedback(Base):
     profile_hash = Column(String(64), nullable=False)
     ratings = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class RecommendationFeedback(Base):
+    __tablename__ = "recommendation_feedback"
+    __table_args__ = (UniqueConstraint("user_id", "profile_hash", name="uq_recommendation_feedback"),)
+    feedback_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False, index=True)
+    profile_hash = Column(String(64), nullable=False)
+    rating = Column(Integer, nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

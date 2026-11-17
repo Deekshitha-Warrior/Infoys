@@ -57,3 +57,13 @@ def test_quality_gate_uses_actual_model_predictions():
     stored = json.loads((ARTIFACTS / "evaluation.json").read_text())
     assert result["ensemble"] == stored["ensemble"]
     assert result["threshold_pass"] == (result["ensemble"]["f1_macro"] >= .78)
+
+
+def test_frozen_contract_ignores_line_endings_but_detects_data_changes(tmp_path):
+    from ml.quality_gate import content_hash
+    windows, linux = tmp_path / "windows.json", tmp_path / "linux.json"
+    windows.write_bytes(b'{\r\n  "skills": ["python"], "career": "Developer"\r\n}')
+    linux.write_bytes(b'{"career":"Developer","skills":["python"]}\n')
+    assert content_hash(windows) == content_hash(linux)
+    linux.write_bytes(b'{"career":"Other","skills":["python"]}\n')
+    assert content_hash(windows) != content_hash(linux)

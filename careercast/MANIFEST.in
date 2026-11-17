@@ -1,0 +1,13 @@
+include README.md SCORING.md MILESTONE3.md MILESTONE4.md
+include backend/requirements.txt
+recursive-include artifacts *.joblib *.json *.md LICENSE-*.txt
+recursive-include data *.json *.md
+recursive-include docs *.md *.json
+recursive-exclude * __pycache__ *.pyc *.db
+prune backend/uploads
+prune artifacts/sentence_encoder
+prune mlruns
+prune mlartifacts
+include backend/review_app.py
+recursive-include backend/tests *.py
+recursive-include scripts *.py

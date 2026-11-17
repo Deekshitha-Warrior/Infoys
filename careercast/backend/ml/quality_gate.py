@@ -7,10 +7,19 @@ from app.intelligence import ROOT, ARTIFACTS, load_bundle
 from .train import metrics
 
 
+def content_hash(path):
+    """Ignore JSON whitespace/key order, but detect any actual value change."""
+    value = json.loads(path.read_text(encoding="utf-8-sig"))
+    encoded = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def evaluate():
     contract = json.loads((ARTIFACTS / "quality_contract.json").read_text())
+    if contract.get("hash_format") != "canonical-json-v1":
+        raise ValueError("Unsupported evaluation hash format")
     for path, key in [(ROOT / "data/career_profiles.json", "dataset_sha256"), (ARTIFACTS / "split.json", "split_sha256")]:
-        if hashlib.sha256(path.read_bytes()).hexdigest() != contract[key]:
+        if content_hash(path) != contract[key]:
             raise ValueError(f"Frozen evaluation contract changed: {path.name}. A reviewed new benchmark is required.")
     records = json.loads((ROOT / "data/career_profiles.json").read_text())
     split = json.loads((ARTIFACTS / "split.json").read_text())

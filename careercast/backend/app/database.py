@@ -3,7 +3,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from .runtime import RUNTIME_DIR
+RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
+BASE_DIR = str(RUNTIME_DIR)
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'careercast.db')}")
 
 engine = create_engine(

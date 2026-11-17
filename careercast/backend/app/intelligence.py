@@ -8,6 +8,9 @@ from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+if not (ROOT / "artifacts/career_models.joblib").exists():
+    from importlib.resources import files
+    ROOT = Path(str(files("careercast_assets")))
 ARTIFACTS = ROOT / "artifacts"
 ALIASES = {
     "js": "javascript",
