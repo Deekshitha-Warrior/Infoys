@@ -12,5 +12,386 @@
   "baseline_macro_f1": 0.3697,
   "threshold_pass": false,
   "regression_pass": true,
-  "scope": "Frozen survey test contract. Previously evaluated holdout; no claim of external benchmark validation."
+  "scope": "Frozen survey test contract. Previously evaluated holdout; no claim of external benchmark validation.",
+  "diagnostics": {
+    "per_career": [
+      {
+        "career": "Business Intelligence Analyst",
+        "training_profiles": 33,
+        "test_profiles": 11,
+        "predicted_profiles": 11,
+        "precision": 0.3636,
+        "recall": 0.3636,
+        "f1": 0.3636
+      },
+      {
+        "career": "Civil Engineer",
+        "training_profiles": 20,
+        "test_profiles": 6,
+        "predicted_profiles": 6,
+        "precision": 0.6667,
+        "recall": 0.6667,
+        "f1": 0.6667
+      },
+      {
+        "career": "Data Scientist",
+        "training_profiles": 13,
+        "test_profiles": 4,
+        "predicted_profiles": 6,
+        "precision": 0.1667,
+        "recall": 0.25,
+        "f1": 0.2
+      },
+      {
+        "career": "Educator",
+        "training_profiles": 28,
+        "test_profiles": 10,
+        "predicted_profiles": 10,
+        "precision": 0.4,
+        "recall": 0.4,
+        "f1": 0.4
+      },
+      {
+        "career": "Finance Analyst",
+        "training_profiles": 11,
+        "test_profiles": 3,
+        "predicted_profiles": 5,
+        "precision": 0.2,
+        "recall": 0.3333,
+        "f1": 0.25
+      },
+      {
+        "career": "Marketing Specialist",
+        "training_profiles": 14,
+        "test_profiles": 5,
+        "predicted_profiles": 6,
+        "precision": 0.1667,
+        "recall": 0.2,
+        "f1": 0.1818
+      },
+      {
+        "career": "Mechanical Engineer",
+        "training_profiles": 30,
+        "test_profiles": 10,
+        "predicted_profiles": 7,
+        "precision": 0.7143,
+        "recall": 0.5,
+        "f1": 0.5882
+      },
+      {
+        "career": "Software Developer",
+        "training_profiles": 103,
+        "test_profiles": 35,
+        "predicted_profiles": 36,
+        "precision": 0.75,
+        "recall": 0.7714,
+        "f1": 0.7606
+      },
+      {
+        "career": "Software QA Engineer",
+        "training_profiles": 6,
+        "test_profiles": 2,
+        "predicted_profiles": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      {
+        "career": "Web Developer",
+        "training_profiles": 11,
+        "test_profiles": 4,
+        "predicted_profiles": 3,
+        "precision": 0.3333,
+        "recall": 0.25,
+        "f1": 0.2857
+      }
+    ],
+    "confusion_matrix": [
+      [
+        4,
+        0,
+        1,
+        2,
+        1,
+        1,
+        0,
+        2,
+        0,
+        0
+      ],
+      [
+        0,
+        4,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        4,
+        0,
+        3,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        1,
+        2,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        1,
+        0,
+        1,
+        5,
+        0,
+        0,
+        1
+      ],
+      [
+        1,
+        0,
+        4,
+        1,
+        1,
+        0,
+        0,
+        27,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        2,
+        0,
+        1
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Business Intelligence Analyst",
+      "Civil Engineer",
+      "Data Scientist",
+      "Educator",
+      "Finance Analyst",
+      "Marketing Specialist",
+      "Mechanical Engineer",
+      "Software Developer",
+      "Software QA Engineer",
+      "Web Developer"
+    ],
+    "confusions": [
+      {
+        "actual": "Software Developer",
+        "predicted": "Data Scientist",
+        "profiles": 4
+      },
+      {
+        "actual": "Educator",
+        "predicted": "Marketing Specialist",
+        "profiles": 3
+      },
+      {
+        "actual": "Business Intelligence Analyst",
+        "predicted": "Educator",
+        "profiles": 2
+      },
+      {
+        "actual": "Business Intelligence Analyst",
+        "predicted": "Software Developer",
+        "profiles": 2
+      },
+      {
+        "actual": "Finance Analyst",
+        "predicted": "Business Intelligence Analyst",
+        "profiles": 2
+      },
+      {
+        "actual": "Marketing Specialist",
+        "predicted": "Finance Analyst",
+        "profiles": 2
+      },
+      {
+        "actual": "Mechanical Engineer",
+        "predicted": "Business Intelligence Analyst",
+        "profiles": 2
+      },
+      {
+        "actual": "Software QA Engineer",
+        "predicted": "Software Developer",
+        "profiles": 2
+      },
+      {
+        "actual": "Web Developer",
+        "predicted": "Software Developer",
+        "profiles": 2
+      },
+      {
+        "actual": "Business Intelligence Analyst",
+        "predicted": "Data Scientist",
+        "profiles": 1
+      },
+      {
+        "actual": "Business Intelligence Analyst",
+        "predicted": "Finance Analyst",
+        "profiles": 1
+      },
+      {
+        "actual": "Business Intelligence Analyst",
+        "predicted": "Marketing Specialist",
+        "profiles": 1
+      },
+      {
+        "actual": "Civil Engineer",
+        "predicted": "Mechanical Engineer",
+        "profiles": 1
+      },
+      {
+        "actual": "Civil Engineer",
+        "predicted": "Software Developer",
+        "profiles": 1
+      },
+      {
+        "actual": "Data Scientist",
+        "predicted": "Business Intelligence Analyst",
+        "profiles": 1
+      },
+      {
+        "actual": "Data Scientist",
+        "predicted": "Civil Engineer",
+        "profiles": 1
+      },
+      {
+        "actual": "Data Scientist",
+        "predicted": "Software Developer",
+        "profiles": 1
+      },
+      {
+        "actual": "Educator",
+        "predicted": "Business Intelligence Analyst",
+        "profiles": 1
+      },
+      {
+        "actual": "Educator",
+        "predicted": "Mechanical Engineer",
+        "profiles": 1
+      },
+      {
+        "actual": "Educator",
+        "predicted": "Software Developer",
+        "profiles": 1
+      },
+      {
+        "actual": "Marketing Specialist",
+        "predicted": "Civil Engineer",
+        "profiles": 1
+      },
+      {
+        "actual": "Marketing Specialist",
+        "predicted": "Educator",
+        "profiles": 1
+      },
+      {
+        "actual": "Mechanical Engineer",
+        "predicted": "Educator",
+        "profiles": 1
+      },
+      {
+        "actual": "Mechanical Engineer",
+        "predicted": "Marketing Specialist",
+        "profiles": 1
+      },
+      {
+        "actual": "Mechanical Engineer",
+        "predicted": "Web Developer",
+        "profiles": 1
+      },
+      {
+        "actual": "Software Developer",
+        "predicted": "Business Intelligence Analyst",
+        "profiles": 1
+      },
+      {
+        "actual": "Software Developer",
+        "predicted": "Educator",
+        "profiles": 1
+      },
+      {
+        "actual": "Software Developer",
+        "predicted": "Finance Analyst",
+        "profiles": 1
+      },
+      {
+        "actual": "Software Developer",
+        "predicted": "Web Developer",
+        "profiles": 1
+      },
+      {
+        "actual": "Web Developer",
+        "predicted": "Educator",
+        "profiles": 1
+      }
+    ],
+    "interpretation": "Macro F1 weights every career equally. Small test counts make per-career estimates uncertain; these results are diagnostics, not a fresh validation set."
+  }
 }

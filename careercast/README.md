@@ -352,3 +352,7 @@ the running model. Explicit promotion requires all measurable model targets and
 no F1 regression on the fixed split. Every candidate gets a distinct version.
 The CI job now adds a clear summary/annotation showing actual F1, required F1 and
 regression status, and never accepts a configured threshold below 78%.
+
+### Model failure diagnostics
+
+The CI quality summary now lists training/test support, predicted counts, precision, recall and F1 for every career. The downloadable `model-quality-evidence` artifact also contains a labeled confusion matrix and aggregate error counts, without profile text. The measured macro F1 remains 36.97%, below 78%; this reporting change does not claim a passing model. Software QA has only 6 training and 2 test profiles and no correct predictions in the frozen holdout. More representative, independently labeled data and renewed validation are needed before acceptance can be claimed.
