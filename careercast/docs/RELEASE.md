@@ -34,3 +34,17 @@ bundled, reviewed artifact; do not replace it with arbitrary uploaded joblib fil
 CI installs the English spaCy model before parser tests. Frozen evaluation
 contracts use canonical JSON hashes, preserving value/array-order integrity
 without rejecting equivalent Windows/Linux line endings.
+
+## Safe training and candidate evaluation
+
+From backend, `python -m ml.train --semantic` writes a timestamped directory
+under artifacts/candidates. It does not overwrite the active model/evaluation.
+Use `--output-dir` for a new explicit candidate directory. `--promote` requires
+baseline accuracy >=65%, ensemble macro F1 >=80%, ranking Top-5 recall >=90%,
+embedding synonym cosine >=85%, no F1 regression and the unchanged split.
+Restart the API after an approved promotion. Other external/pilot acceptance
+criteria still need separate evidence; passing a model gate does not prove them.
+
+`python -m ml.improve_model` reproduces the 32-configuration training-only CV
+comparison and saves model_improvement_experiment.json without deploying a model.
+The holdout was used in previous development and is not independent validation.

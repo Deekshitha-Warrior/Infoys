@@ -1,6 +1,8 @@
 """Train three classifiers with CV only inside the training split."""
 
 import json
+import shutil
+from pathlib import Path
 from datetime import datetime, timezone
 import joblib
 import numpy as np
@@ -31,7 +33,18 @@ def metrics(y, p):
     }
 
 
-def main(semantic=False):
+def promotion_errors(report):
+    """Preserve specification thresholds when manually promoting a candidate."""
+    checks = {
+        "baseline accuracy >=65%": report["models"]["logistic_regression"]["accuracy"] >= .65,
+        "ensemble macro F1 >=80%": report["ensemble"]["f1_macro"] >= .8,
+        "ranking Top-5 recall >=90%": report["ranking"]["top5_recall"] >= .9,
+        "embedding synonym cosine >=85%": report.get("embedding", {}).get("mean_synonym_cosine", 0) >= .85,
+    }
+    return [name for name, passed in checks.items() if not passed]
+
+
+def main(semantic=False, output_dir=None, promote=False):
     records = json.loads(
         (ROOT / "data/career_profiles.json").read_text(encoding="utf-8")
     )
@@ -69,6 +82,8 @@ def main(semantic=False):
             },
         ),
     }
+    candidate_dir = Path(output_dir) if output_dir else ARTIFACTS / "candidates" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    candidate_dir.mkdir(parents=True, exist_ok=False)
     models, report, probabilities = {}, {}, []
     vectorizer = None
     for name, (model, grid) in candidates.items():
@@ -116,7 +131,7 @@ def main(semantic=False):
     )
     ranked_scores = 0.8 * ensemble + 0.2 * alignment
     ARTIFACTS.mkdir(exist_ok=True)
-    version = "career-survey-semantic-v2" if semantic else "career-survey-v1"
+    version = ("career-survey-semantic-v3-" if semantic else "career-survey-v2-") + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     joblib.dump(
         {
             "models": models,
@@ -125,7 +140,7 @@ def main(semantic=False):
             "version": version,
             "data_scope": "Public first-job survey, broad technology career categories. Not a longitudinal career-transition benchmark.",
         },
-        ARTIFACTS / "career_models.joblib",
+        candidate_dir / "career_models.joblib",
     )
     result = {
         "status": "trained",
@@ -164,13 +179,34 @@ def main(semantic=False):
         result["gates"]["embedding_mean_cosine_85"] = result["embedding"][
             "mean_cosine_85_gate"
         ]
-    (ARTIFACTS / "evaluation.json").write_text(
+    (candidate_dir / "evaluation.json").write_text(
         json.dumps(result, indent=2), encoding="utf-8"
     )
-    (ARTIFACTS / "split.json").write_text(
+    (candidate_dir / "split.json").write_text(
         json.dumps({"train": train.tolist(), "test": test.tolist()}), encoding="utf-8"
     )
     print(json.dumps(result, indent=2))
+    print(f"Candidate saved in {candidate_dir}; the live model has not been replaced.")
+    if promote:
+        failures = promotion_errors(result)
+        if failures:
+            raise SystemExit("Promotion blocked: " + "; ".join(failures))
+        from .quality_gate import content_hash, required_f1
+        contract = json.loads((ARTIFACTS / "quality_contract.json").read_text())
+        if result["ensemble"]["f1_macro"] < required_f1(contract):
+            raise SystemExit("Promotion blocked: configured CI threshold not met")
+        if content_hash(ROOT / "data/career_profiles.json") != contract["dataset_sha256"]:
+            raise SystemExit("Promotion blocked: frozen evaluation data changed")
+        if (ARTIFACTS / "evaluation.json").exists():
+            current = json.loads((ARTIFACTS / "evaluation.json").read_text())
+            if result["ensemble"]["f1_macro"] < current["ensemble"]["f1_macro"]:
+                raise SystemExit("Promotion blocked: macro F1 regression")
+        # Keep the evaluation split fixed; changing it requires a reviewed contract.
+        if json.loads((candidate_dir / "split.json").read_text()) != json.loads((ARTIFACTS / "split.json").read_text()):
+            raise SystemExit("Promotion blocked: evaluation split changed")
+        for name in ["career_models.joblib", "evaluation.json"]:
+            shutil.copy2(candidate_dir / name, ARTIFACTS / name)
+        print("Candidate promoted. Restart the API to load its weights.")
 
 
 if __name__ == "__main__":
@@ -178,4 +214,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--semantic", action="store_true")
-    main(parser.parse_args().semantic)
+    parser.add_argument("--output-dir", help="New directory for candidate artifacts; defaults to artifacts/candidates/<timestamp>")
+    parser.add_argument("--promote", action="store_true", help="Replace live weights only after every model acceptance check passes")
+    args = parser.parse_args()
+    main(args.semantic, args.output_dir, args.promote)

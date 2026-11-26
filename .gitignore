@@ -19,3 +19,5 @@ mlartifacts/
 .streamlit/secrets.toml
 
 build/
+
+careercast/artifacts/candidates/

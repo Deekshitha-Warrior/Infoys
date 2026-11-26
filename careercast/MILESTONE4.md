@@ -73,7 +73,7 @@ Installed model assets are read-only; writable account state lives separately.
 
 ## Verification (latest rerun: 26 November 2026)
 
-- Backend integration/regression suite: 16 tests passed.
+- Backend integration/regression suite: 20 tests passed.
 - Existing frontend scoring checks: 3 tests; unchanged React production UI.
 - Batch CLI: 1,000 synthetic structured profiles completed in 20.741 seconds,
   including a cold Python process and JSON output. Four-minute local target passed.

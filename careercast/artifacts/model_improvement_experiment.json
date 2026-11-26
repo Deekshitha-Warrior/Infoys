@@ -1,0 +1,33 @@
+{
+  "evaluated_at": "2026-11-26T13:47:27.738948+00:00",
+  "train_rows": 269,
+  "test_rows": 90,
+  "configurations": 32,
+  "selection": "Five-fold training-only macro F1; word and character features fitted inside every fold.",
+  "best_cv_f1_macro": 0.4208,
+  "best_parameters": {
+    "classifier": "LogisticRegression(max_iter=2000, random_state=42)",
+    "classifier__C": 10,
+    "classifier__class_weight": "balanced",
+    "features__transformer_weights": {
+      "word": 1,
+      "char": 0
+    }
+  },
+  "selected_candidate_test": {
+    "accuracy": 0.5667,
+    "precision_macro": 0.3648,
+    "recall_macro": 0.375,
+    "f1_macro": 0.3667,
+    "top5_recall": 0.8889
+  },
+  "required_macro_f1": 0.78,
+  "target_pass": false,
+  "deployed": false,
+  "limitations": [
+    "This survey holdout was evaluated in earlier development; it is not fresh external validation.",
+    "No test-based hyperparameter selection, data/split changes, or synthetic labeled training rows.",
+    "A selected individual classifier is compared here; its result is not mislabeled as an ensemble result.",
+    "This experiment never changes model weights, deployed evaluation, CI thresholds, or current production files."
+  ]
+}

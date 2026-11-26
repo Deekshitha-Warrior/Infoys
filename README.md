@@ -90,7 +90,7 @@ Docker CLI was unavailable. Frontend deployment alone does not host the API.
 - Added a pip-installable Python library with bundled model assets and a public
   API, plus CLI commands for validation, resume parsing, predictions, gaps,
   PDF/CSV exports, batches, cohort summaries and the API/Streamlit servers.
-- Expanded integration/regression coverage to 16 backend tests, including
+- Expanded integration/regression coverage to 20 backend tests, including
   batch/single prediction parity, CLI output, cohort privacy and feedback.
 - Added Streamlit career comparisons, uploaded-cohort distribution/skill-gap
   analytics, aggregate exports and optional recommendation-satisfaction ratings.
@@ -138,7 +138,7 @@ login flow, token storage, logout behavior, and current limitations.
 
 ## Latest verification - 26 November 2026
 
-All four milestone implementation workflows were rechecked: 16 backend tests,
+All four milestone implementation workflows were rechecked: 20 backend tests,
 3 frontend scoring tests, the frontend build, isolated installed-wheel inference,
 and Streamlit login/comparison/cohort/export checks passed. The latest cold-process
 1,000-profile batch completed in 20.741 seconds. See [readiness evidence](careercast/artifacts/readiness.json).
@@ -151,3 +151,17 @@ prepared environment; `-PythonExecutable` selects an explicit environment.
 Implementation readiness is not full benchmark acceptance: baseline accuracy,
 macro F1, independent parser validation and real-user feedback targets remain
 unmet/unverified. The CI F1 gate is intentionally retained, not bypassed.
+
+## Model quality follow-up - 26 November 2026
+
+A training-only five-fold macro-F1 search compared 32 configurations of Logistic
+Regression, Random Forest and XGBoost with word/character text features. The
+CV-selected candidate achieved 36.67% held-out macro F1, below the current
+ensemble's 36.97%; it was not deployed. The existing model and 78% CI requirement
+remain unchanged. See the improvement experiment artifact for exact parameters.
+
+Training now writes to a new candidate folder by default instead of overwriting
+the running model. Explicit promotion requires all measurable model targets and
+no F1 regression on the fixed split. Every candidate gets a distinct version.
+The CI job now adds a clear summary/annotation showing actual F1, required F1 and
+regression status, and never accepts a configured threshold below 78%.

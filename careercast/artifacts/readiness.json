@@ -4,7 +4,7 @@
   "acceptance_status": "Incomplete: model benchmarks and independent user/parser validation remain unmet or unverified",
   "checks": {
     "backend_tests": {
-      "passed": 16,
+      "passed": 20,
       "failed": 0
     },
     "frontend_scoring_tests": {
@@ -130,5 +130,12 @@
     "python_version": "3.14.6",
     "platform": "Windows",
     "profile_scope": "Dedicated synthetic account in an isolated temporary SQLite database."
+  },
+  "last_model_followup": {
+    "configurations": 32,
+    "candidate_macro_f1": 0.3667,
+    "current_ensemble_macro_f1": 0.3697,
+    "deployed": false,
+    "threshold_changed": false
   }
 }
