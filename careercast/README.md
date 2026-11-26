@@ -356,3 +356,7 @@ regression status, and never accepts a configured threshold below 78%.
 ### Model failure diagnostics
 
 The CI quality summary now lists training/test support, predicted counts, precision, recall and F1 for every career. The downloadable `model-quality-evidence` artifact also contains a labeled confusion matrix and aggregate error counts, without profile text. The measured macro F1 remains 36.97%, below 78%; this reporting change does not claim a passing model. Software QA has only 6 training and 2 test profiles and no correct predictions in the frozen holdout. More representative, independently labeled data and renewed validation are needed before acceptance can be claimed.
+
+### Full-profile semantic experiment
+
+A further 24-configuration experiment used the local O*NET-trained MiniLM encoder on complete profile text, comparing Logistic Regression and SVM with five-fold training-only selection. The selected Logistic Regression candidate achieved 31.06% held-out macro F1 (40% accuracy), below the deployed ensemble at 36.97% macro F1. It was not deployed. See `careercast/artifacts/semantic_experiment.json` from the repository root and `python -m ml.semantic_experiment` from backend (training dependencies and the local sentence encoder required). Neither experiment fixes the 78% CI acceptance failure. A substantially improved, independently validated model is still required; rerunning CI or changing report formatting cannot meet that requirement.

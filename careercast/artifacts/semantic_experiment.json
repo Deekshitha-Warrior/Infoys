@@ -1,0 +1,44 @@
+{
+  "evaluated_at": "2026-11-26T14:17:59.260031+00:00",
+  "train_rows": 269,
+  "test_rows": 90,
+  "features": "Full-profile normalized embeddings from local O*NET fine-tuned MiniLM",
+  "encoder_weights_sha256": "cf3e97969e4cb88678138daeece2f8982e25bdc7a8be0d2d03c1b5a1e6204452",
+  "selection": "Five-fold training-only macro F1 across 24 configurations; one selected holdout evaluation",
+  "cv_results": [
+    {
+      "classifier": "logistic_regression",
+      "best_cv_f1_macro": 0.3813,
+      "best_parameters": {
+        "C": 10,
+        "class_weight": "balanced"
+      }
+    },
+    {
+      "classifier": "support_vector",
+      "best_cv_f1_macro": 0.3764,
+      "best_parameters": {
+        "C": 1,
+        "class_weight": "balanced",
+        "kernel": "rbf"
+      }
+    }
+  ],
+  "selected_classifier": "logistic_regression",
+  "selected_candidate_test": {
+    "accuracy": 0.4,
+    "precision_macro": 0.3441,
+    "recall_macro": 0.3437,
+    "f1_macro": 0.3106,
+    "top5_recall": 0.8889
+  },
+  "minimum_macro_f1": 0.78,
+  "target_pass": false,
+  "deployed": false,
+  "limitations": [
+    "Previously evaluated small survey holdout, not fresh external validation.",
+    "No test labels used for fitting or hyperparameter selection.",
+    "Individual candidate, not the deployed three-model ensemble.",
+    "No production weights, thresholds, labels or split modified."
+  ]
+}
