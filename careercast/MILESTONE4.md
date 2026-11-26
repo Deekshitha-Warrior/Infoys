@@ -71,11 +71,11 @@ Installed model assets are read-only; writable account state lives separately.
 - No public backend, package-index upload, or paid service is provisioned by
   these source changes.
 
-## Verification
+## Verification (latest rerun: 26 November 2026)
 
 - Backend integration/regression suite: 16 tests passed.
 - Existing frontend scoring checks: 3 tests; unchanged React production UI.
-- Batch CLI: 1,000 synthetic structured profiles completed in 53.853 seconds,
+- Batch CLI: 1,000 synthetic structured profiles completed in 20.741 seconds,
   including a cold Python process and JSON output. Four-minute local target passed.
 - Wheel and source metadata checks passed with twine. The wheel was installed
   to an isolated target and exercised outside the source tree; API, CLI, model
@@ -90,3 +90,7 @@ Installed model assets are read-only; writable account state lives separately.
 See artifacts/batch_benchmark.json for exact measurement scope. CI now builds and
 checks distributions and runs the batch benchmark in addition to prior tests.
 The produced wheel is a local distribution; no package-index upload was performed.
+
+The Desktop launcher now supports `-Review` and waits for the API before starting
+the frontend. Its normal setup installs the project package (and review extra
+when requested), making the command-line entry point available as well.

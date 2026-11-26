@@ -1,0 +1,134 @@
+{
+  "verified_on": "2026-11-26",
+  "implementation_status": "Milestone 1-4 workflows implemented and locally verified",
+  "acceptance_status": "Incomplete: model benchmarks and independent user/parser validation remain unmet or unverified",
+  "checks": {
+    "backend_tests": {
+      "passed": 16,
+      "failed": 0
+    },
+    "frontend_scoring_tests": {
+      "passed": 3,
+      "failed": 0
+    },
+    "frontend_build": "passed",
+    "installed_wheel_smoke": "passed",
+    "streamlit_login_comparison_exports_cohort": "passed_against_isolated_synthetic_API",
+    "desktop_launcher_main_API_review": "passed",
+    "batch": {
+      "profiles": 1000,
+      "elapsed_seconds": 20.741,
+      "target_seconds": 240,
+      "passed": true,
+      "measured_at_utc": "2026-11-26T13:09:13.293179+00:00",
+      "python": "3.14.6",
+      "platform": "Windows",
+      "scope": "Cold-process local CLI: structured JSON read, schema validation, text/skill vectorization, three classifiers, career ranking, top-career gap plans and JSON write. Synthetic repeated profiles for throughput only; excludes document parsing, HTTP and public-host performance."
+    }
+  },
+  "measured_model_results": {
+    "logistic_regression": {
+      "accuracy": 0.5556,
+      "precision_macro": 0.4171,
+      "recall_macro": 0.4861,
+      "f1_macro": 0.4325,
+      "top5_recall": 0.8889,
+      "cv_f1_macro": 0.4208,
+      "best_parameters": {
+        "classifier__C": 8.0
+      }
+    },
+    "random_forest": {
+      "accuracy": 0.3778,
+      "precision_macro": 0.2779,
+      "recall_macro": 0.3229,
+      "f1_macro": 0.2844,
+      "top5_recall": 0.8667,
+      "cv_f1_macro": 0.3028,
+      "best_parameters": {
+        "classifier__max_depth": null,
+        "classifier__min_samples_leaf": 2
+      }
+    },
+    "xgboost": {
+      "accuracy": 0.4889,
+      "precision_macro": 0.3181,
+      "recall_macro": 0.2968,
+      "f1_macro": 0.302,
+      "top5_recall": 0.8889,
+      "cv_f1_macro": 0.2847,
+      "best_parameters": {
+        "classifier__learning_rate": 0.15,
+        "classifier__max_depth": 2
+      }
+    }
+  },
+  "ensemble": {
+    "accuracy": 0.5333,
+    "precision_macro": 0.3761,
+    "recall_macro": 0.3735,
+    "f1_macro": 0.3697,
+    "top5_recall": 0.9
+  },
+  "acceptance": {
+    "baseline_accuracy_65": {
+      "actual": 0.5556,
+      "passed": false
+    },
+    "ensemble_macro_f1_80": {
+      "actual": 0.3697,
+      "passed": false
+    },
+    "top5_recall_90": {
+      "actual": 0.9,
+      "passed": true
+    },
+    "ci_macro_f1_78": {
+      "actual": 0.3697,
+      "passed": false
+    },
+    "parser_precision_200_resumes": "unverified_no_independently_annotated_corpus",
+    "pilot_gap_relevance_78": "unverified_no_real_cohort",
+    "user_satisfaction_82": "unverified_no_real_cohort",
+    "semeval_linkedin_validation": "not_performed_named_data_unavailable",
+    "skill_synonym_cosine_85": {
+      "actual": 0.7168,
+      "passed": false
+    }
+  },
+  "runtime_urls": {
+    "main": "http://127.0.0.1:5173",
+    "api_docs": "http://127.0.0.1:8000/docs",
+    "review": "http://127.0.0.1:8501"
+  },
+  "scope": "Local verification. Survey holdout is previously evaluated. No model weights, labels, split or score thresholds changed. No public backend/PyPI/Hugging Face publication is claimed.",
+  "prior_warm_API_benchmark": {
+    "requests": 120,
+    "concurrency": 5,
+    "errors": 0,
+    "endpoints": {
+      "/api/intelligence/gap-report": {
+        "requests": 40,
+        "p50_ms": 67.86,
+        "p95_ms": 102.4
+      },
+      "/api/intelligence/recommend": {
+        "requests": 40,
+        "p50_ms": 118.96,
+        "p95_ms": 185.66
+      },
+      "/api/intelligence/predict": {
+        "requests": 40,
+        "p50_ms": 150.68,
+        "p95_ms": 222.11
+      }
+    },
+    "target_p95_ms": 300,
+    "passed": true,
+    "scope": "Warm-model local HTTP prediction, recommendation and gap queries including authentication, database reads and prediction-history writes. Excludes cold starts and hosted-network guarantees.",
+    "report_generated_at_utc": "2026-11-17T06:49:07.985475+00:00",
+    "python_version": "3.14.6",
+    "platform": "Windows",
+    "profile_scope": "Dedicated synthetic account in an isolated temporary SQLite database."
+  }
+}

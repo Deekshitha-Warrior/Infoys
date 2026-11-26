@@ -151,7 +151,7 @@ Docker CLI was unavailable. Frontend deployment alone does not host the API.
   outside the source checkout, and added packaging/batch checks to GitHub Actions.
 
 **Measured result:** the 1,000-profile structured-input CLI batch completed in
-**53.853 seconds**, under four minutes on this Windows machine. The test covers
+**20.741 seconds**, under four minutes on this Windows machine. The test covers
 validation, feature extraction, all models, ranking, gap analysis and JSON output;
 it does not benchmark parsing 1,000 resumes or deployed-host performance.
 **82% user satisfaction remains unverified** without real participants. Packages
@@ -322,3 +322,19 @@ when deploying the backend. Use a private `SECRET_KEY`, a persistent database,
 and persistent storage for uploaded resumes on that backend.
 
 [Milestone 4 installation, CLI and acceptance evidence](MILESTONE4.md).
+
+## Latest verification - 26 November 2026
+
+All four milestone implementation workflows were rechecked: 16 backend tests,
+3 frontend scoring tests, the frontend build, isolated installed-wheel inference,
+and Streamlit login/comparison/cohort/export checks passed. The latest cold-process
+1,000-profile batch completed in 20.741 seconds. See [readiness evidence](artifacts/readiness.json).
+
+Run the main app with `Start-CareerCast.ps1`; add `-Review` to start the Streamlit
+review UI too. The launcher installs the pip package, waits for API readiness,
+and uses fixed local ports 5173, 8000 and 8501. `-SkipSetup` is for an already
+prepared environment; `-PythonExecutable` selects an explicit environment.
+
+Implementation readiness is not full benchmark acceptance: baseline accuracy,
+macro F1, independent parser validation and real-user feedback targets remain
+unmet/unverified. The CI F1 gate is intentionally retained, not bypassed.
